@@ -11,7 +11,7 @@ private: true
 
 <!--
   下書きメモ（公開前に削除）
-  - 深ぼり隊テンプレート（templates/fukabori-tai_template.md）の構成に組み直した版
+  - 深ぼり隊テンプレート（deep-dive/templates/fukabori-tai_template.md）の構成に組み直した版
   - ✍️ の欄は Nico が自分の言葉で書き直す。今入っている文章は仮置きの例
   - 「AI」の発言は、元の下書きの解説を会話形式に要約したもの。実際の壁打ちログがあれば差し替える
   - コードと EXPLAIN の出力は Python 3 + SQLite 3.45.1 で実行確認済み

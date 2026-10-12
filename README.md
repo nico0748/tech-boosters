@@ -8,4 +8,17 @@ Qiitaに技術記事を投稿するための作業フォルダです。3つの�
 | [hands-on/](hands-on/) | 技術を使いこなし隊 | 話題の技術を実際に触って使いこなす |
 | [hidden-gems/](hidden-gems/) | 技術を広めていき隊 | マイナーだけど便利な技術を広める |
 | [icon/](icon/) | - | シリーズのロゴ画像 |
-| [qiita-github/](qiita-github/) | - | Qiita CLI + GitHub Actionsで記事を投稿するリポジトリの雛形 |
+| [qiita-github/](qiita-github/) | - | Qiita CLI + GitHub Actionsで記事を投稿する（`public/` の記事が投稿される） |
+
+## 各シリーズフォルダの構成
+
+```
+<シリーズ>/
+├── README.md
+├── icon.png      シリーズのロゴ
+├── templates/    記事テンプレート（あるシリーズのみ）
+├── drafts/       下書き
+└── assets/       記事で使う図・素材（あるシリーズのみ）
+```
+
+下書きが完成したら `qiita-github/public/` に移して main に push すると、Qiitaに投稿されます。
