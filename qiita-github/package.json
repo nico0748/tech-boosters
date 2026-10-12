@@ -1,0 +1,12 @@
+{
+  "name": "qiita-articles",
+  "private": true,
+  "scripts": {
+    "preview": "qiita preview",
+    "new": "qiita new",
+    "publish:all": "qiita publish --all"
+  },
+  "devDependencies": {
+    "@qiita/qiita-cli": "^1.9.1"
+  }
+}
