@@ -6,4 +6,4 @@
 - `gijutsu_tsukaikonashi.png` 使いこなし隊（hands-on）
 - `gijutsu_hirometeikitai.png` 広めていき隊（hidden-gems）
 
-各シリーズフォルダにも `icon.png` としてコピーを置いています（深ぼり隊は白背景のテックロゴ）。
+各シリーズフォルダにも `assets/icon/icon.png` としてコピーを置いています（深ぼり隊は白背景のテックロゴ）。

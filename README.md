@@ -10,15 +10,53 @@ Qiitaに技術記事を投稿するための作業フォルダです。3つの�
 | [icon/](icon/) | - | シリーズのロゴ画像 |
 | [qiita-github/](qiita-github/) | - | Qiita CLI + GitHub Actionsで記事を投稿する（`public/` の記事が投稿される） |
 
-## 各シリーズフォルダの構成
+## 記事ディレクトリのルール
+
+### シリーズフォルダの構成
 
 ```
 <シリーズ>/
 ├── README.md
-├── icon.png      シリーズのロゴ
-├── templates/    記事テンプレート（あるシリーズのみ）
-├── drafts/       下書き
-└── assets/       記事で使う図・素材（あるシリーズのみ）
+├── assets/                   シリーズ共通の素材
+│   ├── icon/icon.png         シリーズのロゴ
+│   └── <素材名>/             複数記事で使う図など（例: deep-dive/assets/attack-routes/）
+├── templates/                記事テンプレート（あるシリーズのみ。.md を1つ置く）
+└── drafts/
+    └── no.<番号>-<slug>/     記事1本 = 1ディレクトリ
+        ├── <記事ファイル>.md
+        └── image/            その記事だけで使う画像
 ```
 
-下書きが完成したら `qiita-github/public/` に移して main に push すると、Qiitaに投稿されます。
+### 命名ルール
+
+| 対象 | ルール | 例 |
+|---|---|---|
+| 記事ディレクトリ | `no.<番号>-<slug>` | `no.2-sqli` |
+| 番号 | シリーズごとの連番（1から、ゼロ埋めなし）。欠番・再利用はしない | `no.1`, `no.2`, … |
+| slug | 英小文字・数字・ハイフンのみ | `xss`, `open-redirect` |
+| 記事ファイル（deep-dive） | `<slug>-internals.md` | `sqli-internals.md` |
+| 記事ファイル（hands-on / hidden-gems） | `<slug>.md` | `qiita-cli-git-kanri.md` |
+
+- 記事ファイル名は、`qiita-github/public/` に移したときに他の記事とかぶらない名前にする
+- 1本の記事でしか使わない画像は記事の `image/` に、複数の記事で使う素材はシリーズの `assets/` に置く
+
+### 新しい記事を作る
+
+ルールどおりのディレクトリは、スクリプトで作ります。
+
+```sh
+scripts/new-draft.sh <シリーズ> <slug>
+# 例: scripts/new-draft.sh deep-dive csrf
+#   → deep-dive/drafts/no.3-csrf/csrf-internals.md と image/ ができる
+```
+
+- 番号は自動で「そのシリーズの最大番号 + 1」になる
+- `templates/` に .md があれば、それを記事ファイルの初期内容としてコピーする
+- slug の形式違いや、同じ slug・同じファイル名の記事がすでにあればエラーで止まる
+
+### 公開するとき
+
+1. 記事ファイル（.md）だけを `qiita-github/public/` に移す
+2. 記事ディレクトリ（`image/` を含む）は `drafts/` に残す（番号を欠番・再利用させないため）
+3. 画像は Qiita CLI ではアップロードできないので、Qiita のエディタでアップロードして、出てきたURLを記事に貼る
+4. main に push すると Qiita に投稿される

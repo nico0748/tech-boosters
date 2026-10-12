@@ -1,10 +1,12 @@
-<img src="icon.png" alt="series logo" width="480">
+<img src="assets/icon/icon.png" alt="series logo" width="480">
 
 # hidden-gems（技術を広めていき隊）
 
 マイナーだけど非常に便利な技術を広めるシリーズです。
 
+ディレクトリと命名のルールは[リポジトリ直下のREADME](../README.md#記事ディレクトリのルール)を参照してください。
+
 ## 中身
 - [drafts/](drafts/) 下書き（まだ記事はありません）
-
-公開する記事は `qiita-github/public/` に移すと、mainへのpushでQiitaに投稿されます。
+- [assets/](assets/) シリーズ共通の素材
+  - `icon/` シリーズのロゴ

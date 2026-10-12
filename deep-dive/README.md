@@ -1,4 +1,4 @@
-<img src="icon.png" alt="series logo" width="480">
+<img src="assets/icon/icon.png" alt="series logo" width="480">
 
 # deep-dive（技術を深ぼり隊）
 
@@ -6,12 +6,14 @@
 
 記事の構成は、まず自分が知っていることを書き、そのあとAIとの壁打ちで分からなかった内部動作を明らかにしていく形式です。
 
+ディレクトリと命名のルールは[リポジトリ直下のREADME](../README.md#記事ディレクトリのルール)を参照してください。
+
 ## 中身
 - [templates/](templates/) 記事のテンプレート
   - `fukabori-tai_template.md` 深ぼり隊の記事テンプレート
-- [drafts/](drafts/) 下書き
-  - `sqli-internals.md` SQLインジェクションの内部動作（壁打ち形式）
-- [assets/](assets/) 記事で使う図・素材
+- [drafts/](drafts/) 下書き（記事1本 = 1ディレクトリ）
+  - `no.1-xss/` XSSの内部動作（テンプレートのみ）
+  - `no.2-sqli/` SQLインジェクションの内部動作（壁打ち形式）
+- [assets/](assets/) シリーズ共通の素材
+  - `icon/` シリーズのロゴ
   - [attack-routes/](assets/attack-routes/) 攻撃経路図
-
-公開する記事は `qiita-github/public/` に移すと、mainへのpushでQiitaに投稿されます。
