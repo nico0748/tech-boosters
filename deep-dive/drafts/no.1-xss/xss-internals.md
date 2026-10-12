@@ -46,7 +46,8 @@ private: true
 
 ## 検証環境
 
-- （例）Python 3.x / SQLite 3.x / macOS
+- macOS / Google Chrome 152（`DOMParser` でHTMLをパースして確認）
+- ローカルのHTTPサーバ：`python3 -m http.server`（Python 3.12）
 
 # 自分が知っていること（壁打ち前）
 
@@ -122,6 +123,7 @@ HTMLの解析手順は、ブラウザごとの独自実装ではなく、仕様�
 
 <!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
 ![ブラウザのHTMLパーサの全体像](image/01_HTMLパーサの全体像.png)
+*図1：ブラウザのHTMLパーサの全体像。サーバから届いたバイト列は、デコード・トークナイザ・ツリー構築を経て画面とスクリプトになる*
 
 サーバから届くのは、ただのバイト列です。ブラウザはこれを次の順で処理します。
 
@@ -137,6 +139,7 @@ SQLiのときの「字句解析 → 構文解析 → バイトコード生成 �
 
 <!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
 ![トークナイザの状態遷移](image/02_トークナイザの状態遷移.png)
+*図2：トークナイザの状態遷移。同じ「<」でも、生の文字で来るか文字参照（`&lt;`）で来るかで、たどる状態がまったく違う*
 
 トークナイザは「状態機械」です。今いる「状態」と「次の1文字」だけを見て、次の状態とトークンの出力を決めます。
 仕様書には80個ほどの状態が定義されていますが、XSSを理解するのに必要なのは次の3つくらいです。
@@ -154,15 +157,107 @@ SQLiのときの「字句解析 → 構文解析 → バイトコード生成 �
 もうひとつ、`<script>` の開始タグを読むと、ツリー構築の段階がトークナイザを専用の状態（Script data state）に切り替えます。
 この状態では中身をHTMLとして解釈せず、`</script>` が来るまでの文字をまとめてJavaScriptエンジンに渡します。
 
-## ラウンド2：（疑問2を短く）
+## ラウンド2：パーサはどこで「タグ」だと決める？
 
-> **自分**：
+> **自分**：パーサの仕組みはわかった。じゃあ実際に、エスケープしていない入力とエスケープした入力を本物のブラウザのパーサに通したら、結果はどう違うの？
 
-> **AI**：
+> **AI**：ブラウザの `DOMParser` を使うと、HTML文字列をブラウザと同じパーサに通して、できたDOMツリーを確認できます。`DOMParser` はパースするだけで `script` を実行しないので、安全に試せます。サーバのテンプレートに名前を埋め込む想定で、入力だけを変えて比べてみましょう。
 
 ### 自分で確かめる
 
+次のHTMLファイルをローカルのHTTPサーバ（`python3 -m http.server` など）で開きます。
+
+```html:parse-check.html
+<!doctype html>
+<meta charset="utf-8">
+<pre id="out"></pre>
+<script>
+// サーバ側のテンプレートに name を埋め込んだ結果を、ブラウザのHTMLパーサに通す
+const render = (name) => `<p>こんにちは、${name}さん</p>`;
+
+// DOMツリーを木の形で文字列にする
+function dump(node, indent = "") {
+  let s = "";
+  for (const child of node.childNodes) {
+    if (child.nodeType === Node.ELEMENT_NODE) {
+      s += `${indent}要素 <${child.nodeName.toLowerCase()}>\n` + dump(child, indent + "  ");
+    } else if (child.nodeType === Node.TEXT_NODE) {
+      s += `${indent}テキスト ${JSON.stringify(child.data)}\n`;
+    }
+  }
+  return s;
+}
+
+const inputs = [
+  "Nico",
+  "<b>Nico</b>",
+  "&lt;b&gt;Nico&lt;/b&gt;",
+  "<script>console.log('hello')<\/script>",
+  "&lt;script&gt;console.log('hello')&lt;/script&gt;",
+];
+
+let out = "";
+for (const name of inputs) {
+  const html = render(name);
+  // DOMParser はパースするだけで、script を実行しない
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  out += `== 入力: ${name}\n埋め込み後: ${html}\n` + dump(doc.body) + "\n";
+}
+document.getElementById("out").textContent = out;
+</script>
+```
+
+実行結果です（Chrome 152）。
+
+```text
+== 入力: Nico
+埋め込み後: <p>こんにちは、Nicoさん</p>
+要素 <p>
+  テキスト "こんにちは、Nicoさん"
+
+== 入力: <b>Nico</b>
+埋め込み後: <p>こんにちは、<b>Nico</b>さん</p>
+要素 <p>
+  テキスト "こんにちは、"
+  要素 <b>
+    テキスト "Nico"
+  テキスト "さん"
+
+== 入力: &lt;b&gt;Nico&lt;/b&gt;
+埋め込み後: <p>こんにちは、&lt;b&gt;Nico&lt;/b&gt;さん</p>
+要素 <p>
+  テキスト "こんにちは、<b>Nico</b>さん"
+
+== 入力: <script>console.log('hello')</script>
+埋め込み後: <p>こんにちは、<script>console.log('hello')</script>さん</p>
+要素 <p>
+  テキスト "こんにちは、"
+  要素 <script>
+    テキスト "console.log('hello')"
+  テキスト "さん"
+
+== 入力: &lt;script&gt;console.log('hello')&lt;/script&gt;
+埋め込み後: <p>こんにちは、&lt;script&gt;console.log('hello')&lt;/script&gt;さん</p>
+要素 <p>
+  テキスト "こんにちは、<script>console.log('hello')</script>さん"
+```
+
+<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
+![エスケープの有無によるDOMツリーの違い](image/03_エスケープ有無によるDOMツリーの違い.png)
+*図3：同じテンプレートに、エスケープしない入力とエスケープした入力を埋め込んだときの、トークンとDOMツリーの違い*
+
 ### わかったこと
+
+エスケープしない入力では、`p` 要素の中に **`b` 要素や `script` 要素が新しく生まれています**。
+入力が変えたのは「表示される文字」ではなく、**DOMツリーの構造そのもの** でした。
+`script` 要素ができてしまえば、普通のページ読み込みでは、ブラウザはその中身をJavaScriptエンジンに渡して実行します。
+
+一方、エスケープした入力では、見た目は同じ `<b>Nico</b>` という文字なのに、DOMツリーには **テキストが1つあるだけ** です。
+図2で見たとおり、`&lt;` は文字参照状態を通って「`<` という文字」として出てくるので、タグ開始状態に入る道がありません。
+
+SQLiでは、インジェクションで **バイトコードの命令が消えました**。
+XSSでは、インジェクションで **DOMツリーに要素が増えました**。
+どちらも「データのつもりの入力が、パーサによって構造の一部として解釈された」結果です。
 
 ## ラウンド3：（疑問3を短く）
 
