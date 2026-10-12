@@ -1,10 +1,11 @@
 ---
-title: 〇〇の正体を△△で見る：（低レイヤーで何が起きているかを一言で）
+title: XSSの正体をHTMLパーサで見る：ブラウザの中で「文字」が「タグ」にすり替わる瞬間
 tags:
+  - XSS
   - セキュリティ
   - 脆弱性
-  - （技術名）
-  - （使う言語・ツール）
+  - HTML
+  - JavaScript
 private: true
 ---
 
@@ -41,8 +42,9 @@ private: true
 
 ## この記事でわかること
 
-- （例）〇〇が起きたときに、内部のどの処理で何が変わっているか
-- （例）よく言われる対策「△△」が効く本当の理由
+- XSSで悪意のあるコードが動くのは、サーバではなく被害者のブラウザの中であること
+- ブラウザのHTMLパーサ（トークナイザ）が、どの瞬間に文字列を「タグ」だと判断しているか
+- エスケープ処理が中で何をしているか、そして埋め込む場所によって必要な対策が変わる理由
 
 ## 検証環境
 
@@ -259,29 +261,208 @@ SQLiでは、インジェクションで **バイトコードの命令が消え�
 XSSでは、インジェクションで **DOMツリーに要素が増えました**。
 どちらも「データのつもりの入力が、パーサによって構造の一部として解釈された」結果です。
 
-## ラウンド3：（疑問3を短く）
+## ラウンド3：エスケープは中で何をしている？
 
-> **自分**：
+> **自分**：エスケープが効くのはわかった。でも、エスケープ処理って中で具体的に何をしているの？それに、どこに埋め込むときも同じエスケープでいいの？
 
-> **AI**：
+> **AI**：たとえばPythonの `html.escape()` は、5種類の文字を文字参照に置き換えているだけです。ソースを見るとわかります。ただし、それで安全になるのは「トークナイザがその文字を特別扱いする場所」に埋め込んだときだけです。埋め込む場所によってトークナイザの状態が違うので、必要な対策も変わります。
 
-### 自分で確かめる
+### 自分で確かめる（1）：html.escape の中身
+
+`inspect` で標準ライブラリのソースを表示してみます。
+
+```python:show_escape.py
+import html, inspect
+
+print(inspect.getsource(html.escape))
+print(html.escape('<b class="x">Tom & Jerry\'s</b>'))
+```
+
+```text
+def escape(s, quote=True):
+    """
+    Replace special characters "&", "<" and ">" to HTML-safe sequences.
+    If the optional flag quote is true (the default), the quotation mark
+    characters, both double quote (") and single quote (') characters are also
+    translated.
+    """
+    s = s.replace("&", "&amp;") # Must be done first!
+    s = s.replace("<", "&lt;")
+    s = s.replace(">", "&gt;")
+    if quote:
+        s = s.replace('"', "&quot;")
+        s = s.replace('\'', "&#x27;")
+    return s
+
+&lt;b class=&quot;x&quot;&gt;Tom &amp; Jerry&#x27;s&lt;/b&gt;
+```
+
+中身は `str.replace` を5回呼んでいるだけでした。特別な解析をしているわけではありません。
+
+<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
+![エスケープ処理の中身](image/04_エスケープ処理の中身.png)
+*図4：`html.escape()` が置き換える5文字と、`&` を最初に置き換える理由*
+
+`# Must be done first!` というコメントが気になります。
+`&` を最後に置き換えると、`<` を置き換えて作った `&lt;` の `&` まで置き換えてしまい、`&amp;lt;` になります。
+すると画面には `<` ではなく `&lt;` という文字列が表示されてしまいます（二重エスケープ）。
+
+### 自分で確かめる（2）：埋め込む場所を変えてみる
+
+ラウンド2と同じく `DOMParser` を使い、今度は「属性値の中」と「script要素の中」に埋め込んで比べます。
+`escapeHtml` は `html.escape()` と同じ順番で置き換えるようにしています。
+
+```html:context-check.html
+<!doctype html>
+<meta charset="utf-8">
+<pre id="out"></pre>
+<script>
+// Python の html.escape と同じ順番で置き換える
+const escapeHtml = (s) => s
+  .replaceAll("&", "&amp;")
+  .replaceAll("<", "&lt;")
+  .replaceAll(">", "&gt;")
+  .replaceAll('"', "&quot;")
+  .replaceAll("'", "&#x27;");
+
+// script 要素の中に値を埋め込むときの方法：JSONにして「<」を < にする
+const toScriptLiteral = (s) => JSON.stringify(s).replaceAll("<", "\\u003c");
+
+// DOMツリーを、属性と script の中身も含めて文字列にする
+function dump(node, indent = "") {
+  let s = "";
+  for (const child of node.childNodes) {
+    if (child.nodeType === Node.ELEMENT_NODE) {
+      const attrs = [...child.attributes].map(a => ` ${a.name}=${JSON.stringify(a.value)}`).join("");
+      s += `${indent}要素 <${child.nodeName.toLowerCase()}${attrs}>\n` + dump(child, indent + "  ");
+    } else if (child.nodeType === Node.TEXT_NODE) {
+      s += `${indent}テキスト ${JSON.stringify(child.data)}\n`;
+    }
+  }
+  return s;
+}
+
+const parse = (html) => new DOMParser().parseFromString(html, "text/html");
+
+const cases = [
+  // 1. 属性値の中
+  ["属性値・そのまま", `<p title="${'Nico" data-x="1'}">こんにちは</p>`],
+  ["属性値・エスケープ", `<p title="${escapeHtml('Nico" data-x="1')}">こんにちは</p>`],
+  // 2. script 要素の中
+  ["script・そのまま", `<script>const name = "${'Nico<\/script><b>Nico</b>'}";<\/script><p>おわり</p>`],
+  ["script・HTMLエスケープ", `<script>const name = "${escapeHtml('Nico<\/script><b>Nico</b>')}";<\/script><p>おわり</p>`],
+  ["script・JSON+\\u003c", `<script>const name = ${toScriptLiteral('Nico<\/script><b>Nico</b>')};<\/script><p>おわり</p>`],
+];
+
+let out = "";
+for (const [label, html] of cases) {
+  out += `== ${label}\n埋め込み後: ${html}\n` + dump(parse(html).documentElement) + "\n";
+}
+document.getElementById("out").textContent = out;
+</script>
+```
+
+実行結果です（Chrome 152）。
+
+```text
+== 属性値・そのまま
+埋め込み後: <p title="Nico" data-x="1">こんにちは</p>
+要素 <head>
+要素 <body>
+  要素 <p title="Nico" data-x="1">
+    テキスト "こんにちは"
+
+== 属性値・エスケープ
+埋め込み後: <p title="Nico&quot; data-x=&quot;1">こんにちは</p>
+要素 <head>
+要素 <body>
+  要素 <p title="Nico\" data-x=\"1">
+    テキスト "こんにちは"
+
+== script・そのまま
+埋め込み後: <script>const name = "Nico</script><b>Nico</b>";</script><p>おわり</p>
+要素 <head>
+  要素 <script>
+    テキスト "const name = \"Nico"
+要素 <body>
+  要素 <b>
+    テキスト "Nico"
+  テキスト "\";"
+  要素 <p>
+    テキスト "おわり"
+
+== script・HTMLエスケープ
+埋め込み後: <script>const name = "Nico&lt;/script&gt;&lt;b&gt;Nico&lt;/b&gt;";</script><p>おわり</p>
+要素 <head>
+  要素 <script>
+    テキスト "const name = \"Nico&lt;/script&gt;&lt;b&gt;Nico&lt;/b&gt;\";"
+要素 <body>
+  要素 <p>
+    テキスト "おわり"
+
+== script・JSON+<
+埋め込み後: <script>const name = "Nico</script><b>Nico</b>";</script><p>おわり</p>
+要素 <head>
+  要素 <script>
+    テキスト "const name = \"Nico\\u003c/script>\\u003cb>Nico\\u003c/b>\";"
+要素 <body>
+  要素 <p>
+    テキスト "おわり"
+```
+
+:::note info
+この確認用ページを最初に作ったとき、JavaScriptの文字列の中に `</script>` をそのまま書いていたせいで、**確認用ページ自体の script 要素がそこで閉じてしまいました**。
+script要素の中では、JavaScriptの文字列の途中かどうかに関係なく `</script` でHTMLのトークナイザが抜け出す、ということを身をもって体験しました。上のコードでは `<\/script>` と書いて避けています（JavaScriptとしては同じ文字列です）。
+:::
+
+<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
+![埋め込む場所ごとのエスケープ](image/05_埋め込む場所ごとのエスケープ.png)
+*図5：埋め込む場所ごとの、トークナイザの状態・そこから抜け出す文字・必要な対策*
 
 ### わかったこと
+
+**属性値の中** では、トークナイザは「Attribute value (double-quoted) state」にいて、`"` が来ると属性値が終わります。
+エスケープしないと `"` で属性値が閉じ、入力から `data-x` という属性が **新しく生まれました**。
+`&quot;` にエスケープすれば、`"` はただの文字として属性値の中に収まります。
+なお、属性値を `"` で囲まずに書くと、今度は空白で属性値が終わってしまうので、囲むことが前提です。
+
+**script要素の中** は話が違いました。ここでトークナイザは「Script data state」にいて、仕様上 **文字参照を解釈しません**。
+
+- そのまま埋め込むと、JavaScriptの文字列の途中でも `</script` でscript要素が閉じ、後ろの `<b>` が要素になった
+- HTMLエスケープすると、構造は壊れないが、`&lt;` が **デコードされずにそのままJavaScriptに渡る**。つまりJavaScriptから見た値が変わってしまい、正しい対策になっていない
+- JSONにして `<` を `<` に置き換えると、`</script` という並びが消えるので構造は壊れない。`<` はJavaScriptの文字列として `<` に戻るので、値も元のまま
+
+最後に **URLを入れる属性**（`href` など）です。これは確認コードには入れていませんが、AIに聞いたところ、HTMLエスケープしても `javascript:` で始まるURLのような「スキームそのものが危ないURL」は防げない、とのことでした。
+HTMLとしては正しい属性値なので、トークナイザの段階では何も起きません。リンクを開いたあとに、ブラウザがURLとして解釈した段階で問題になります。
+そのため、URLを入れる場所では `http:` / `https:` など許可するスキームを決めておく必要があります。
+
+エスケープは「危ない文字を消す魔法」ではありませんでした。
+**埋め込む場所でトークナイザがどの状態にいて、何の文字でそこから抜け出すのか** に合わせて、その文字だけを言い換える処理です。
 
 # 壁打ちで変わった理解
 
 | 壁打ち前 | 壁打ち後 |
 | --- | --- |
-| （例）〇〇だと思っていた | （例）実際は△△だった |
-|  |  |
+| XSSのペイロードは `'<script>OR 1=1<script>'` みたいな感じ | `OR 1=1` はSQLiの文字列だった。XSSでブラウザに届くのはHTMLやJavaScript |
+| 悪意のあるコードがサーバに送られて、そこで処理されて情報が漏れる | サーバは文字列をHTMLに埋め込んで返すだけ。コードが動くのは被害者のブラウザの中 |
+| エスケープ処理が有効（中身はよくわからない） | 中身は `str.replace` 5回。トークナイザが特別扱いする文字を文字参照に言い換えて、タグ開始状態に入る道をふさいでいる |
+| エスケープすればどこでも安全 | 埋め込む場所でトークナイザの状態が違う。script要素の中ではHTMLエスケープは効かず、URLではスキームの確認が要る |
 
 # まとめ
 
-- （ラウンドごとの「わかったこと」を1行ずつ）
+- XSSのコードは被害者のブラウザの中で動く。サーバは文字列を埋め込んで返すだけ
+- ブラウザのHTMLパーサでは、トークナイザが生の `<` を読んだ瞬間に「タグ」が始まる。入力がDOMツリーに要素を増やすのがXSSの正体
+- エスケープは、特別扱いされる文字を文字参照に言い換えて、トークナイザの状態遷移を変えない処理
+- 埋め込む場所（本文・属性値・script要素の中・URL）ごとに、抜け出す文字も必要な対策も違う
 
-次回は（次のテーマ）を深ぼりする予定です。
+SQLiでは「DBのパーサ」、XSSでは「ブラウザのHTMLパーサ」で、データが構造にすり替わっていました。
+次回も、別の脆弱性で「どのパーサで何がすり替わっているのか」を深ぼりする予定です。
 
 # 参考
 
-- （公式ドキュメント・仕様書・ソースコードなど、確認に使った一次情報）
+- [HTML Living Standard 13.2 Parsing HTML documents](https://html.spec.whatwg.org/multipage/parsing.html)
+  - 13.2.5.1 Data state / 13.2.5.4 Script data state / 13.2.5.6 Tag open state / 13.2.5.36 Attribute value (double-quoted) state / 13.2.5.77 Character reference state
+- [MDN: DOMParser](https://developer.mozilla.org/ja/docs/Web/API/DOMParser)
+- [Python ドキュメント: html.escape](https://docs.python.org/ja/3/library/html.html#html.escape)
+- [OWASP Cross Site Scripting Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
+- [IPA 安全なウェブサイトの作り方](https://www.ipa.go.jp/security/vuln/websecurity/about.html)
