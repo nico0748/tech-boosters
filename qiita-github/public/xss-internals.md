@@ -16,6 +16,8 @@ posting_campaign_uuid: null
 agreed_posting_campaign_term: false
 ---
 
+![技術を深ぼり隊ロゴ](https://raw.githubusercontent.com/nico0748/tech-boosters/1056076d53db75804c113be3a7344d3567be58b7/deep-dive/assets/icon/icon.png)
+
 # はじめに
 
 こんにちは、「技術を深ぼり隊」です。

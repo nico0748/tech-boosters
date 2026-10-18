@@ -27,6 +27,8 @@ private: true
   - 語調は口語調（スキル colloquial-tech-writing）。図のルールはリポジトリ直下 README を参照
 -->
 
+![技術を深ぼり隊ロゴ](/deep-dive/assets/icon/icon.png)
+
 # はじめに
 
 こんにちは、「技術を深ぼり隊」です。
