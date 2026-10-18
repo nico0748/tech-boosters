@@ -36,6 +36,7 @@ Qiitaに技術記事を投稿するための作業フォルダです。3つの�
 | slug | 英小文字・数字・ハイフンのみ | `xss`, `open-redirect` |
 | 記事ファイル（deep-dive） | `<slug>-internals.md` | `sqli-internals.md` |
 | 記事ファイル（hands-on / hidden-gems） | `<slug>.md` | `qiita-cli-git-kanri.md` |
+| 記事タイトル（deep-dive） | `（技術名）を深ぼってみる` | `SQLインジェクションを深ぼってみる` |
 
 - 記事ファイル名は、`qiita-github/public/` に移したときに他の記事とかぶらない名前にする
 - 1本の記事でしか使わない画像は記事の `image/` に、複数の記事で使う素材はシリーズの `assets/` に置く
