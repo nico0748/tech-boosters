@@ -1,5 +1,5 @@
 ---
-title: XSSの正体をHTMLパーサで見る：ブラウザの中で「文字」が「タグ」にすり替わる瞬間
+title: 【技術を深ぼり隊】クロスサイトスクリプティング(XSS)を深ぼってみる
 tags:
   - XSS
   - セキュリティ
@@ -26,8 +26,6 @@ private: true
   - 攻撃手法を扱うので、冒頭の注意書き（:::note warn）は必ず残す
   - 語調は口語調（スキル colloquial-tech-writing）。図のルールはリポジトリ直下 README を参照
 -->
-
-![技術を深ぼり隊ロゴ](/deep-dive/assets/icon/icon.png)
 
 # はじめに
 
