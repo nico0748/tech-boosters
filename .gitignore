@@ -5,3 +5,6 @@ node_modules/
 ~$*
 .vscode/
 pyrefly.toml
+
+# 執筆ルールのテンプレ（ローカル専用・リモートには出さない）
+deep-dive/templates/fukabori-tai_template.md
