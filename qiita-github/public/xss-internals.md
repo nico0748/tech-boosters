@@ -1,14 +1,14 @@
 ---
 title: XSSの正体をHTMLパーサで見る：ブラウザの中で「文字」が「タグ」にすり替わる瞬間
 tags:
-  - XSS
-  - セキュリティ
+  - xss
+  - Security
   - 脆弱性
   - HTML
   - JavaScript
 private: false
-updated_at: ''
-id: null
+updated_at: '2026-10-19T02:38:07+09:00'
+id: afb3dee0aec5805084b2
 organization_url_name: null
 slide: false
 ignorePublish: false
