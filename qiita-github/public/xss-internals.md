@@ -6,8 +6,7 @@ tags:
   - 脆弱性
   - HTML
   - JavaScript
-private: true
-ignorePublish: true
+private: false
 ---
 
 # はじめに
@@ -53,8 +52,7 @@ XSSは名前こそ有名ですが、「なぜ？」「中では何が起きて�
 というわけで、いちばんイメージしやすい格納型を例に、時間の流れに沿ってAIに整理してもらいました。
 「攻撃者」「サーバ」「被害者のブラウザの中」に加えて、**被害者本人に見えていること** も並べてもらっています。
 
-<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
-![格納型XSSの流れ](image/01_格納型XSSの流れ.png)
+![格納型XSSの流れ](https://raw.githubusercontent.com/nico0748/tech-boosters/e7fefda782b17b113d4df34a7ba56ee14c4acbb5/deep-dive/drafts/no.1-xss/image/01_%E6%A0%BC%E7%B4%8D%E5%9E%8BXSS%E3%81%AE%E6%B5%81%E3%82%8C.png)
 *図1：格納型XSSの流れ。攻撃者・Webアプリ（サーバ）・被害者のブラウザの中・被害者に見えていることを、手順ごとに並べたもの*
 
 **攻撃者から見ると**、やることは「スクリプトを含む文字列を投稿する」と「送られてきた情報を受け取る」の2つだけです。被害者のブラウザに直接触ることはありません。手順2〜4は、サイトとブラウザが勝手に進めてくれます。投稿したらあとは放置でいい、というわけです。
@@ -67,22 +65,18 @@ XSSは名前こそ有名ですが、「なぜ？」「中では何が起きて�
 
 > **AI**：変わるのは「罠をどこに置くか」と「誰がその文字列をHTMLに入れるか」です。最後にスクリプトが被害者のブラウザの中で動く、という点はどの型でも同じです。
 
-<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
-![XSSの3つの型の違い](image/02_XSSの3つの型の違い.png)
+![XSSの3つの型の違い](https://raw.githubusercontent.com/nico0748/tech-boosters/e7fefda782b17b113d4df34a7ba56ee14c4acbb5/deep-dive/drafts/no.1-xss/image/02_XSS%E3%81%AE3%E3%81%A4%E3%81%AE%E5%9E%8B%E3%81%AE%E9%81%95%E3%81%84.png)
 *図2：反射型・格納型・DOM型の違い。罠を仕込む場所、文字列をHTMLに入れる主体、被害者が踏むきっかけを比べたもの*
 
 次に、文字列がネットワークのどこを通ってブラウザに届くのかを、型ごとにデータフローで追ってみました。
 
-<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
-![反射型XSSのデータフロー](image/03_反射型XSSのデータフロー.png)
+![反射型XSSのデータフロー](https://raw.githubusercontent.com/nico0748/tech-boosters/e7fefda782b17b113d4df34a7ba56ee14c4acbb5/deep-dive/drafts/no.1-xss/image/03_%E5%8F%8D%E5%B0%84%E5%9E%8BXSS%E3%81%AE%E3%83%87%E3%83%BC%E3%82%BF%E3%83%95%E3%83%AD%E3%83%BC.png)
 *図3：反射型のデータフロー。罠URLのクエリを、サーバがそのまま応答のHTMLに反射する（DBは使わない）*
 
-<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
-![格納型XSSのデータフロー](image/04_格納型XSSのデータフロー.png)
+![格納型XSSのデータフロー](https://raw.githubusercontent.com/nico0748/tech-boosters/e7fefda782b17b113d4df34a7ba56ee14c4acbb5/deep-dive/drafts/no.1-xss/image/04_%E6%A0%BC%E7%B4%8D%E5%9E%8BXSS%E3%81%AE%E3%83%87%E3%83%BC%E3%82%BF%E3%83%95%E3%83%AD%E3%83%BC.png)
 *図4：格納型のデータフロー。罠がDBに保存され、被害者は普通にページを開くだけで発動する*
 
-<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
-![DOM型XSSのデータフロー](image/05_DOM型XSSのデータフロー.png)
+![DOM型XSSのデータフロー](https://raw.githubusercontent.com/nico0748/tech-boosters/e7fefda782b17b113d4df34a7ba56ee14c4acbb5/deep-dive/drafts/no.1-xss/image/05_DOM%E5%9E%8BXSS%E3%81%AE%E3%83%87%E3%83%BC%E3%82%BF%E3%83%95%E3%83%AD%E3%83%BC.png)
 *図5：DOM型のデータフロー。文字列をHTMLに入れるのはサーバではなくブラウザ上のJavaScript。URLの `#` 以降はサーバに届かない*
 
 3枚を並べて見ると、違うのは **罠がどこに置かれ、誰が文字列をHTMLに入れるか** だけ。最後にスクリプトが被害者のブラウザの中で動いて、Cookieなんかが攻撃者の回収サーバへ送られる、という終わり方はどの型も同じでした。
@@ -108,8 +102,7 @@ SQLiは「データのつもりの文字列が、DBのパーサで命令とし�
 
 ### 全体像
 
-<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
-![ブラウザのHTMLパーサの全体像](image/06_HTMLパーサの全体像.png)
+![ブラウザのHTMLパーサの全体像](https://raw.githubusercontent.com/nico0748/tech-boosters/e7fefda782b17b113d4df34a7ba56ee14c4acbb5/deep-dive/drafts/no.1-xss/image/06_HTML%E3%83%91%E3%83%BC%E3%82%B5%E3%81%AE%E5%85%A8%E4%BD%93%E5%83%8F.png)
 *図6：ブラウザのHTMLパーサの全体像。サーバから届いたバイト列は、デコード・トークナイザ・ツリー構築を経て画面とスクリプトになる*
 
 サーバから届くのは、ただのバイト列です。ブラウザはこれを次の順番で料理していきます。
@@ -124,8 +117,7 @@ SQLiのときの「字句解析 → 構文解析 → バイトコード生成 �
 
 ### トークナイザは状態を切り替えながら読む
 
-<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
-![トークナイザの状態遷移](image/07_トークナイザの状態遷移.png)
+![トークナイザの状態遷移](https://raw.githubusercontent.com/nico0748/tech-boosters/e7fefda782b17b113d4df34a7ba56ee14c4acbb5/deep-dive/drafts/no.1-xss/image/07_%E3%83%88%E3%83%BC%E3%82%AF%E3%83%8A%E3%82%A4%E3%82%B6%E3%81%AE%E7%8A%B6%E6%85%8B%E9%81%B7%E7%A7%BB.png)
 *図7：トークナイザの状態遷移。同じ「<」でも、生の文字で来るか文字参照（`&lt;`）で来るかで、たどる状態がまったく違う*
 
 トークナイザは「状態機械」です。今いる「状態」と「次の1文字」だけを見て、次の状態とトークンの出力を決めていきます。
@@ -229,8 +221,7 @@ document.getElementById("out").textContent = out;
   テキスト "こんにちは、<script>console.log('hello')</script>さん"
 ```
 
-<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
-![エスケープの有無によるDOMツリーの違い](image/08_エスケープ有無によるDOMツリーの違い.png)
+![エスケープの有無によるDOMツリーの違い](https://raw.githubusercontent.com/nico0748/tech-boosters/e7fefda782b17b113d4df34a7ba56ee14c4acbb5/deep-dive/drafts/no.1-xss/image/08_%E3%82%A8%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%97%E6%9C%89%E7%84%A1%E3%81%AB%E3%82%88%E3%82%8BDOM%E3%83%84%E3%83%AA%E3%83%BC%E3%81%AE%E9%81%95%E3%81%84.png)
 *図8：同じテンプレートに、エスケープしない入力とエスケープした入力を埋め込んだときの、トークンとDOMツリーの違い*
 
 ### わかったこと
@@ -279,8 +270,7 @@ def escape(s, quote=True):
 
 中身は `str.replace` を5回呼んでいるだけでした。拍子抜けするくらいシンプルで、特別な解析をしているわけではありません。
 
-<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
-![エスケープ処理の中身](image/09_エスケープ処理の中身.png)
+![エスケープ処理の中身](https://raw.githubusercontent.com/nico0748/tech-boosters/e7fefda782b17b113d4df34a7ba56ee14c4acbb5/deep-dive/drafts/no.1-xss/image/09_%E3%82%A8%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%97%E5%87%A6%E7%90%86%E3%81%AE%E4%B8%AD%E8%BA%AB.png)
 *図9：`html.escape()` が置き換える5文字と、`&` を最初に置き換える理由*
 
 `# Must be done first!` というコメントが地味に気になります。もし `&` を最後に置き換えると、`<` を置き換えて作った `&lt;` の `&` まで置き換えてしまって、`&amp;lt;` になります。すると画面には `<` ではなく `&lt;` という文字列がそのまま表示されてしまう（二重エスケープ）。だから `&` が最初なんですね。
@@ -393,8 +383,7 @@ document.getElementById("out").textContent = out;
 script要素の中では、JavaScriptの文字列の途中かどうかなんて関係なく `</script` でHTMLのトークナイザが抜け出す、というのを身をもって体験した瞬間です。上のコードでは `<\/script>` と書いて避けています（JavaScriptとしては同じ文字列です）。
 :::
 
-<!-- TODO: Qiitaのエディタで画像をアップロードしてURLを差し替える -->
-![埋め込む場所ごとのエスケープ](image/10_埋め込む場所ごとのエスケープ.png)
+![埋め込む場所ごとのエスケープ](https://raw.githubusercontent.com/nico0748/tech-boosters/e7fefda782b17b113d4df34a7ba56ee14c4acbb5/deep-dive/drafts/no.1-xss/image/10_%E5%9F%8B%E3%82%81%E8%BE%BC%E3%82%80%E5%A0%B4%E6%89%80%E3%81%94%E3%81%A8%E3%81%AE%E3%82%A8%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%97.png)
 *図10：埋め込む場所ごとの、トークナイザの状態・そこから抜け出す文字・必要な対策*
 
 ### わかったこと
