@@ -7,7 +7,7 @@ tags:
   - HTML
   - JavaScript
 private: false
-updated_at: '2026-10-19T03:08:05+09:00'
+updated_at: '2026-10-20T02:44:18+09:00'
 id: afb3dee0aec5805084b2
 organization_url_name: null
 slide: false
