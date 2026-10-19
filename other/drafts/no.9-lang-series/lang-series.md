@@ -53,6 +53,11 @@ LangChainは、LLMアプリでよく使う部品を、共通の書き方で扱�
 - **RAGの部品**：文書の読み込み、分割、埋め込み、ベクトルストアへの保存と検索
 - **エージェント**：LLMがツールを選んで使いながらタスクを進める仕組みを、少ないコードで作れる
 
+図1は、LangChain単体でエージェントを作ったときの構成です。プロンプトにユーザーの入力を埋め込んでチャットモデルに渡し、モデルが必要と判断すればツールを呼んで、その結果を受け取ってから回答を返します。モデルの提供元が変わっても、この形は変わりません。
+
+![LangChain単体の構成](image/01_LangChain単体の構成.png)
+*図1：LangChain単体の構成。モデルの呼び出しとツールの実行を、共通の書き方でつなぐ*
+
 ## どんなときに使うか
 
 「とりあえずLLMにツールを持たせて動かしたい」「RAGを手早く組みたい」といった、よくある形のアプリを素早く作りたいときに向いています。
@@ -70,6 +75,11 @@ LangGraphは、エージェントの処理を「ノード（処理）」と「�
 - **人の確認を挟む（human-in-the-loop）**：「メールを送る前に人が承認する」のように、処理を止めて人の判断を待てる
 - **複数エージェントの連携**：役割の違うエージェントをノードとしてつなげられる
 
+図2は、複数のエージェントをLangGraphでまとめた例です。スーパーバイザーが次の担当を決め、各エージェントの中身はLangChainで書きます。会話履歴や途中の結果は共有のState（状態）に入れて受け渡し、チェックポインタに保存しておくことで、失敗しても途中から再開できます。
+
+![LangGraphによるオーケストレーション](image/02_LangGraphによるオーケストレーション.png)
+*図2：LangGraphによるオーケストレーション。分岐・人の確認・途中保存をグラフとして書ける*
+
 ## LangChainとどう使い分けるのか？
 
 | やりたいこと | 向いているもの |
@@ -79,6 +89,11 @@ LangGraphは、エージェントの処理を「ノード（処理）」と「�
 
 LangChainで作って、制御が足りなくなったらLangGraphで書き直す（または組み合わせる）、という進め方が多いようです。
 オーケストレーション構成の実装のために必要な感じ！
+
+両方を組み合わせた例がRAGです（図3）。文書の読み込みからベクトルストアへの保存まではLangChainの部品で準備しておき、質問が来たときの「検索するか判断する → 検索する → 関連があるか確かめる → なければ質問を書き換えてもう一度」という流れをLangGraphで組みます。
+
+![LangGraphで組むRAG](image/03_LangGraphで組むRAG.png)
+*図3：LangGraphで組むRAG。部品はLangChain、流れの分岐とループはLangGraphが受け持つ*
 
 # LangSmith：動きを記録して、評価する
 
@@ -92,6 +107,16 @@ LangSmithは、LangChain社が提供する、LLMアプリの開発と運用の�
 - **プロンプトの管理**：プロンプトのバージョンを管理して、試したり戻したりできる
 
 LangChainやLangGraphとはそのまま連携できますが、それ以外のフレームワークや、フレームワークを使わずに書いたコードからも記録を送れます。
+
+LangChainやLangGraphで作ったアプリなら、環境変数（`LANGSMITH_TRACING=true` など）を設定するだけで、SDKがトレースをLangSmithに送ってくれます（図4）。
+
+![LangSmithを加えた構成](image/04_LangSmithを加えた構成.png)
+*図4：LangSmithを加えた構成。アプリからトレースを送り、開発者はブラウザで記録・評価・監視を確認する*
+
+実際にLangSmithにログインすると、図6の画面になります。左のメニューに、トレース（Tracing）、監視（Monitoring）、データセットと実験（Datasets & Experiments）、評価（Evaluators）、プロンプト管理（Prompts）などが並んでいて、ここまでで紹介した機能がそのまま項目になっています。
+
+![LangSmithのホーム画面](image/06_LangSmith_Home.png)
+*図6：LangSmithのホーム画面。左のメニューから、トレース・監視・評価・プロンプト管理などを開ける*
 
 # Langfuse：オープンソースで同じことをする
 
@@ -109,6 +134,16 @@ Langfuseは、LangSmithとよく似た役割を持つ、オープンソースの
 **自分のサーバーで動かせること** です。
 本体はMITライセンスのオープンソースで、Dockerなどを使って自社の環境に立てられます（一部の管理機能はエンタープライズ版のライセンスが必要）。
 「LLMに送ったデータを外部のサービスに置きたくない」という場合に選ばれやすいです。
+
+図5は、Langfuseを自分のAWSアカウントに立てる場合と、Langfuseのクラウド版を使う場合を並べたものです。アプリ側はLangfuseのSDKを組み込み、送信先（`LANGFUSE_BASE_URL`）を切り替えるだけで、どちらにもトレースを送れます。自分で立てる場合は、Web・Worker・データベース・キュー・ClickHouseなど、運用する部品が増える点に注意が必要です。
+
+![Langfuseを加えた構成](image/05_Langfuseを加えた構成.png)
+*図5：Langfuseを加えた構成。自分のAWSで運用するか、クラウド版を使うかを選べる*
+
+クラウド版には東京リージョン（`jp.cloud.langfuse.com`）もあり、トレースやプロンプト、評価のデータを日本国内に置いたまま使えるとされています（図7）。サイトのロゴの横に「by ClickHouse」と書かれているところからも、ClickHouse社の傘下に入ったことが分かります。
+
+![Langfuseのトップページ](image/07_LangFuse_Home.png)
+*図7：Langfuseのトップページ。日本（東京）リージョンのクラウド版が案内されている*
 
 ## 勘違いしていたこと
 
@@ -129,8 +164,6 @@ LangChainやLangGraphとの連携機能はありますが、「Langシリーズ�
 | データを外に出したくない | LangChain / LangGraph ＋ Langfuse（自分のサーバーに立てる） |
 | フレームワークは使わず、記録だけほしい | 自前のコード ＋ LangSmith か Langfuse |
 
-<!-- TODO: 実際に LangGraph の簡単なグラフを作って、LangSmith と Langfuse の両方にトレースを送った画面を載せる -->
-
 # まとめ
 
 - **LangChain**：LLMアプリの部品を共通の書き方でつなぐフレームワーク
@@ -144,10 +177,9 @@ LangChainやLangGraphとの連携機能はありますが、「Langシリーズ�
 
 # 参考
 
-<!-- TODO: 公開前に公式ドキュメントのリンクを確認して並べる
-  - LangChain ドキュメント
-  - LangGraph ドキュメント
-  - LangSmith ドキュメント
--->
+- [LangChain overview（LangChain公式ドキュメント）](https://docs.langchain.com/oss/python/langchain/overview)
+- [LangGraph overview（LangChain公式ドキュメント）](https://docs.langchain.com/oss/python/langgraph/overview)
+- [LangSmith Observability（LangChain公式ドキュメント）](https://docs.langchain.com/langsmith/home)
+- [Langfuse ドキュメント](https://langfuse.com/docs)
 - [Langfuse joins ClickHouse（Langfuse公式ブログ）](https://langfuse.com/blog/joining-clickhouse)
 - [ClickHouse raises $400M Series D...（ClickHouse公式ブログ）](https://clickhouse.com/blog/clickhouse-raises-400-million-series-d-acquires-langfuse-launches-postgres)
