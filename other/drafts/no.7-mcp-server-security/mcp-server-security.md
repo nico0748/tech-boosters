@@ -50,7 +50,22 @@ MCP（Model Context Protocol）は、LLMアプリと外部のツールやデー�
 - **stdio**：ホストがサーバーを子プロセスとして起動し、標準入出力でやりとりする。ローカルで使うならこれが基本
 - **Streamable HTTP**：サーバーをHTTPで公開し、ネットワーク越しにつなぐ
 
+![MCPの全体像](image/01_MCPの全体像.png)
+*図1：MCPの全体像。ホストの中のクライアントが、サーバーと1対1でつながる*
+
+LLMがツールを使うときは、図2の順番でやりとりが進みます。
+接続したときにホストがツールの一覧（`tools/list`）を受け取っておき、会話の中でLLMが使いたいツールを選ぶと、ホストがユーザーに確認したうえでサーバーに実行（`tools/call`）を頼みます。
+
+![ツールを呼ぶまでの流れ](image/02_ツールを呼ぶまでの流れ.png)
+*図2：ツールを呼ぶまでの流れ。実際にファイルやAPIを触るのはサーバーで、LLMはツール名と引数を決めるだけ*
+
 # 構築してみる
+
+今回つないだ構成は図3のとおりです。
+Claude CodeとClaude Desktopのどちらからも、同じPaperLensのMCPサーバーをstdioで起動します。サーバーは、PaperLensアプリが使うのと同じ論文データを読み書きします。
+
+![PaperLensのMCP構成](image/03_PaperLensのMCP構成.png)
+*図3：PaperLensのMCP構成。AIに頼んでも、自分でアプリから読んでも、同じデータが更新される*
 
 ## サーバーを作る
 
@@ -77,7 +92,7 @@ server.registerTool(
 await server.connect(new StdioServerTransport());
 ```
 
-<!-- TODO: SDK のバージョンを書く。API 名（registerTool など）は使ったバージョンで確認する -->
+※ `@modelcontextprotocol/sdk` 1.30.0 で書いたコードです。バージョンによって API 名が変わることがあります。
 
 ## Claude Codeに登録する
 
@@ -147,7 +162,7 @@ LLMは読んだ文章に影響されるので、普通のプログラムとは�
 | サプライチェーン | `npx some-mcp-server` のようにバージョンを固定せず取ってきて、知らない間に中身が変わる |
 | ローカルHTTPサーバーへの攻撃 | HTTPで待ち受けるローカルサーバーに、ブラウザで開いた悪いページから DNS リバインディングなどでリクエストが届く |
 
-<!-- TODO: 各リスクについて、仕様や報告の一次情報へのリンクを「参考」に足す -->
+ツールポイズニングは、2025年4月にInvariant Labsが報告した攻撃です。ローカルHTTPサーバーへのDNSリバインディングやトークンの扱いは、MCPの仕様書のセキュリティの章でも注意点として挙げられています。
 
 ## サーバーを作る側の対策
 
@@ -157,6 +172,12 @@ LLMは読んだ文章に影響されるので、普通のプログラムとは�
 - **入力を検証する**：引数はスキーマで型と範囲を絞る。ファイルパスは許可したフォルダの外に出ないか（`../` など）を確かめる。シェルに文字列をそのまま渡さない
 - **戻り値は「データ」として返す**：外から取ってきた本文に指示文が混ざっていても、サーバー側では止めきれない。少なくとも、どこから来た文章かが分かる形で返す
 - **HTTPで公開するなら**：ローカル用は `127.0.0.1` だけで待ち受ける。`Origin` ヘッダーを検証する。認証を付ける。受け取ったトークンを別のAPIにそのまま転送しない（トークンパススルー）
+
+図4は、Claudeが書き込み系のツールを使ってPaperLensの数式帳に記号の説明を書き込んだ結果です。
+便利な反面、AIがこれだけの量をノートに直接書き込めるということでもあります。`PAPERLENS_MCP_READONLY` を付けておけば、書き込み系のツール自体が公開されないので、こうした書き込みは起こりません。
+
+![PaperLensの画面とMCPサーバ](image/04_PaperLensの画面とMCPサーバ.png)
+*図4：MCPサーバー経由で書き込まれた数式帳。読み取り専用モードでは、書き込み系のツールは公開されない*
 
 ## 使う側の対策
 
@@ -180,8 +201,7 @@ LLMは読んだ文章に影響されるので、普通のプログラムとは�
 
 # 参考
 
-<!-- TODO: 裏を取った一次情報を並べる
-  - Model Context Protocol 仕様（Transports / Security Best Practices）
-  - Claude Code の MCP ドキュメント
-  - ツールポイズニングの報告
--->
+- [Transports（Model Context Protocol 仕様）](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports)
+- [Security Best Practices（Model Context Protocol 仕様）](https://modelcontextprotocol.io/specification/2025-06-18/basic/security_best_practices)
+- [Connect Claude Code to tools via MCP（Claude Code ドキュメント）](https://code.claude.com/docs/en/mcp)
+- [MCP Security Notification: Tool Poisoning Attacks（Invariant Labs）](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks)
