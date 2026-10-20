@@ -21,12 +21,11 @@ private: true
 
 # はじめに
 
-LLMアプリを作ろうとして調べると、LangChain、LangGraph、LangSmith、Langfuse…と「Lang」で始まる名前がずらっと出てきます。
-正直どれが何をするものなのか、ずっとふわっとしていたので、それぞれの役割を整理してみました。
+最近、業務や個人開発でLangChain、LangGraph、LangSmith、Langfuse…といった"Lang"シリーズを頻繁に使う機会が増えてきたので、今回はそれぞれの役割を体系的に整理してみました。
 
 # ざっくり全体像
 
-先に結論を表にしておきます。
+ということで一旦簡単にまとめてみました
 
 | 名前 | ひとことで | 種類 | 提供元 |
 | --- | --- | --- | --- |
@@ -171,9 +170,7 @@ LangChainやLangGraphとの連携機能はありますが、「Langシリーズ�
 - **LangSmith**：LangChain社の、記録・評価・監視のプラットフォーム
 - **Langfuse**：同じ役割を持つオープンソースの基盤。自分のサーバーで動かせる。LangChain社の製品ではない
 
-「作る」がLangChainとLangGraph、「見る・測る」がLangSmithとLangfuse、と分けて覚えるとすっきりするのよ🙌
-
-ほかの使い分け方や、実際に運用してみての感想があれば、有識者の方教えて欲しいです！
+「作る」がLangChainとLangGraph、「見る・測る」がLangSmithとLangfuse、と分けられそう🙌
 
 # 参考
 
