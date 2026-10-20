@@ -4,14 +4,16 @@ tags:
   - LangChain
   - LangGraph
   - LangSmith
-  - Langfuse
+  - langfuse
   - LLM
 private: false
-updated_at: ''
-id: null
+updated_at: '2026-10-21T04:40:40+09:00'
+id: 114cefa0a693cf2b9970
 organization_url_name: null
 slide: false
 ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 
 # はじめに
