@@ -8,6 +8,7 @@ Qiitaに技術記事を投稿するための作業フォルダです。3つの�
 | [hands-on/](hands-on/) | 技術を使いこなし隊 | 話題の技術を実際に触って使いこなす |
 | [hidden-gems/](hidden-gems/) | 技術を広めていき隊 | マイナーだけど便利な技術を広める |
 | [retrospective/](retrospective/) | セキュリティ1年振り返り | セキュリティに興味を持ってからここまでの1年を振り返る |
+| [compact/](compact/) | コンパクト記事 | 技術・システム・ツールを、ほんとうに簡単にまとめる |
 | [other/](other/) | 自由記事 | シリーズに当てはまらない記事を自由に置く（小ネタ・ハマった話など） |
 | [icon/](icon/) | - | シリーズのロゴ画像 |
 | [qiita-github/](qiita-github/) | - | Qiita CLI + GitHub Actionsで記事を投稿する（`public/` の記事が投稿される） |

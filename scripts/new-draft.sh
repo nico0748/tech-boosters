@@ -11,12 +11,12 @@ series="${1:-}"
 slug="${2:-}"
 
 usage() {
-  echo "使い方: $0 <deep-dive|hands-on|hidden-gems|retrospective> <slug>" >&2
+  echo "使い方: $0 <deep-dive|hands-on|hidden-gems|retrospective|compact> <slug>" >&2
   exit 1
 }
 
 case "$series" in
-  deep-dive|hands-on|hidden-gems|retrospective) ;;
+  deep-dive|hands-on|hidden-gems|retrospective|compact) ;;
   *) usage ;;
 esac
 [[ "$slug" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || {
