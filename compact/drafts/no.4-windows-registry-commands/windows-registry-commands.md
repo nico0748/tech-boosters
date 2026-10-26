@@ -17,6 +17,7 @@ private: true
 # はじめに
 
 インシデント対応の記事を読んでいると「Run キーに登録されていた」がよく出てくるので、レジストリとその操作コマンドをまとめておきます。
+EDR ログ分析のハンズオンに参加したときにもレジストリの話が出てきたので、そこで学んだことも混ぜています。
 
 # ひとことで言うと
 
@@ -26,6 +27,14 @@ private: true
 # 構造
 
 フォルダのような「キー」の中に、名前・型・データを持つ「値」が入っています。
+パスは `ルートキー\サブキー\…\値` の形で書きます。
+
+```text
+HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion  の  ProductName
+```
+
+ここには Windows のエディション名が入っています。
+ただし Windows 11 でもこの値は「Windows 10 Pro」のままになっていて、11 かどうかはビルド番号（`CurrentBuild` が 22000 以上）で見分けます。ちょっとした罠ですね。
 
 ## ルートキー
 
@@ -33,9 +42,11 @@ private: true
 |---|---|---|
 | HKEY_LOCAL_MACHINE | HKLM | コンピューター全体の設定 |
 | HKEY_CURRENT_USER | HKCU | ログオン中のユーザーの設定 |
-| HKEY_USERS | HKU | 全ユーザーの設定 |
+| HKEY_USERS | HKU | 読み込まれているユーザーごとの設定（`HKU\<SID>`） |
 | HKEY_CLASSES_ROOT | HKCR | ファイルの関連付けや COM の情報 |
 | HKEY_CURRENT_CONFIG | HKCC | 現在のハードウェア構成 |
+
+HKCU は独立した場所ではなく、`HKU\<ログオン中のユーザーの SID>` を指しているだけです。
 
 ## 値の主な型
 
@@ -47,6 +58,19 @@ private: true
 | REG_DWORD | 32ビットの数値 |
 | REG_QWORD | 64ビットの数値 |
 | REG_BINARY | バイナリ |
+
+## 身近なキーの例
+
+| 設定 | キー |
+|---|---|
+| マウスの速度 | `HKCU\Control Panel\Mouse` の `MouseSensitivity` |
+| デスクトップの壁紙 | `HKCU\Control Panel\Desktop` の `Wallpaper` |
+| 拡張子を表示するか | `HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced` の `HideFileExt` |
+| 最近開いたファイル | `HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs` |
+| インストール済みのソフト | `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall` |
+| USB ストレージの接続履歴 | `HKLM\SYSTEM\CurrentControlSet\Enum\USBSTOR` |
+
+普段 GUI で変えている設定も、裏ではこういうキーに保存されています。
 
 # コマンド
 
@@ -96,6 +120,8 @@ Remove-ItemProperty -Path "HKCU:\Software\Example" -Name "Sample"
 - `HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce`
 - `HKLM\Software\Microsoft\Windows\CurrentVersion\Run`
 - `HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce`
+
+Run キー以外にも、上の「身近なキーの例」にある `RecentDocs`（何のファイルを開いたか）、`USBSTOR`（どの USB メモリが挿されたか）、`Uninstall`（何がインストールされているか）は、「その端末で何が起きたか」をたどる手がかりになります。
 
 # まとめ
 
