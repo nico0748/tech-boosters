@@ -34,7 +34,7 @@ Qiitaに技術記事を投稿するための作業フォルダです。3つの�
 
 | 対象 | ルール | 例 |
 |---|---|---|
-| 記事ディレクトリ | `no.<番号>-<slug>` | `no.2-sqli` |
+| 記事ディレクトリ | `no.<番号>-<slug>`。Qiitaに公開済みの記事は末尾に `-done` を付ける | `no.2-sqli`, `no.1-xss-done` |
 | 番号 | シリーズごとの連番（1から、ゼロ埋めなし）。欠番・再利用はしない | `no.1`, `no.2`, … |
 | slug | 英小文字・数字・ハイフンのみ | `xss`, `open-redirect` |
 | 記事ファイル（deep-dive） | `<slug>-internals.md` | `sqli-internals.md` |
