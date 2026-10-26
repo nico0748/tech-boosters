@@ -23,5 +23,5 @@
   - `no.8-recent-cyberattacks/` 直近のサイバー攻撃について分析してみる（2026年10月：IDCFクラウドとフランスのスーパーの冷蔵設備）
   - `no.9-lang-series-done/` Langシリーズは何ができるの（LangChain・LangGraph・LangSmith・Langfuse）
   - `no.10-google-selfie-video-verification/` Googleアカウントの認証方法に自撮り動画が追加されてた件について
-  - `no.11-php-security-release/` PHPの脆弱性と修正パッチの公開（2026年10月21日の緊急リリースで何が行われていたか）
+  - `no.11-php-security-release-done/` PHPの脆弱性と修正パッチの公開（2026年10月21日の緊急リリースで何が行われていたか）
   - `no.12-security-days-fall-2026/` Security Days Fall 2026 Tokyoで得たナレッジと気になった技術
