@@ -2,16 +2,18 @@
 title: Googleアカウントの認証方法に自撮り動画が追加されてた件について
 tags:
   - Google
-  - セキュリティ
+  - Security
   - 認証
   - 本人確認
   - ディープフェイク
 private: false
-updated_at: ''
-id: null
+updated_at: '2026-10-27T02:15:34+09:00'
+id: 7ba12f499b8385798b9f
 organization_url_name: null
 slide: false
 ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 # はじめに
 
