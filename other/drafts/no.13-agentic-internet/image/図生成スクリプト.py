@@ -25,7 +25,7 @@ FONT = "Noto Sans CJK JP"
 
 prs = Presentation()
 prs.slide_width = Inches(13.333)
-prs.slide_height = Inches(7.5)
+prs.slide_height = Inches(8.5)
 
 
 def new_slide():
@@ -123,94 +123,143 @@ def arrow(s, x1, y1, x2, y2, color=SUB, dash=False):
     tail.set("len", "med")
     return c
 
+def card(s, x, y, w, h, lines, border=NAVY, fill=WHITE):
+    """lines: [(text, size, bold, color), ...]"""
+    sh = rrect(s, x, y, w, h, fill, border)
+    set_text(sh, lines)
+    return sh
 
-# ---------- 図1: AIエージェントの通信の増加と、人からのアクセスの減少 ----------
+
+def line(s, x1, y1, x2, y2, color=SUB):
+    c = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(x1), Inches(y1), Inches(x2), Inches(y2))
+    c.line.color.rgb = color
+    c.line.width = Pt(1.5)
+    return c
+
+
+RED_BG = RGBColor(0xFB, 0xEC, 0xEA)
+
+# ---------- 図1: Cloudflareで見えている通信の量 ----------
+# 出典: Cloudflare Blog「The Internet has a second audience」(2026-09-30)
 s = new_slide()
-BASE = 6.0   # 棒グラフの底
-MAXH = 4.2   # いちばん高い棒の高さ
+BASE = 7.2
+SCALE = 5.2 / 150  # 1億5,000万を5.2インチに
 
-# 左: AIエージェントの通信（1年前を1としたとき）
-zone(s, 0.5, 0.75, 6.0, 6.25, "AIエージェントの通信", TEAL, TEAL_BG)
-unit = MAXH / 18
-s.shapes  # noqa
-rect(s, 1.4, BASE - unit, 1.6, unit, TEAL_MID, TEAL)
-rect(s, 4.0, BASE - 18 * unit, 1.6, 18 * unit, TEAL)
-label(s, 1.2, BASE - unit - 0.55, 2.0, 0.5, "1", 18, TEXT, True)
-label(s, 3.6, BASE - 18 * unit - 0.6, 2.4, 0.55, "18倍以上", 20, TEAL, True)
-arrow(s, 2.3, BASE - 1.0, 3.85, BASE - 3.4, TEAL)
-label(s, 0.7, BASE - 3.2, 2.9, 0.5, "1年で1,700%以上増", 16, TEAL, True)
-s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(0.9), Inches(BASE), Inches(6.1), Inches(BASE)).line.color.rgb = SUB
-label(s, 1.2, BASE + 0.1, 2.0, 0.45, "1年前", 16, TEXT)
-label(s, 3.8, BASE + 0.1, 2.0, 0.45, "現在", 16, TEXT)
+zone(s, 0.5, 0.75, 7.2, 7.25, "HTTPリクエスト数（1秒あたり）", NAVY, NAVY_BG, tabw=5.4)
+h1, h2, hp = 63 * SCALE, 115 * SCALE, 150 * SCALE
+rect(s, 1.5, BASE - h1, 2.0, h1, NAVY)
+rect(s, 4.6, BASE - h2, 2.0, h2, NAVY)
+rrect(s, 4.6, BASE - hp, 2.0, hp - h2, None, NAVY, adj=0.0, dash=True)
+label(s, 1.2, BASE - h1 - 0.6, 2.6, 0.5, "6,300万", 20, TEXT, True)
+label(s, 4.4, BASE - h2 + 0.1, 2.4, 0.5, "1億1,500万", 20, WHITE, True)
+label(s, 3.9, BASE - hp - 0.6, 3.4, 0.5, "ピーク時 1億5,000万超", 16, NAVY, True)
+arrow(s, 3.6, BASE - h1 + 0.1, 4.5, BASE - h2 + 0.5, NAVY)
+label(s, 2.6, BASE - h2 - 0.15, 1.9, 0.5, "約1.8倍", 20, NAVY, True)
+line(s, 0.9, BASE, 7.3, BASE)
+label(s, 1.3, BASE + 0.08, 2.4, 0.45, "2024年末", 16, TEXT)
+label(s, 4.4, BASE + 0.08, 2.4, 0.45, "2026年9月", 16, TEXT)
 
-# 右: 人からのアクセス（以前を100としたとき）
-zone(s, 6.85, 0.75, 6.0, 6.25, "人からのアクセス", NAVY, NAVY_BG)
-rect(s, 7.75, BASE - MAXH, 1.6, MAXH, NAVY)
-lo, hi = 0.6 * MAXH, 0.7 * MAXH
-rect(s, 10.35, BASE - lo, 1.6, lo, NAVY)
-rrect(s, 10.35, BASE - hi, 1.6, hi - lo, None, NAVY, adj=0.0, dash=True)
-label(s, 7.55, BASE - MAXH - 0.55, 2.0, 0.5, "100", 18, TEXT, True)
-label(s, 9.95, BASE - hi - 0.6, 2.4, 0.55, "3〜4割減", 20, RED, True)
-s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(7.25), Inches(BASE), Inches(12.45), Inches(BASE)).line.color.rgb = SUB
-label(s, 7.55, BASE + 0.1, 2.0, 0.45, "以前", 16, TEXT)
-label(s, 10.15, BASE + 0.1, 2.0, 0.45, "現在", 16, TEXT)
+zone(s, 8.05, 0.75, 4.8, 7.25, "中身の変化", TEAL, TEAL_BG)
+card(s, 8.3, 1.4, 4.3, 2.2, [
+    ("18倍以上", 30, True, TEAL),
+    ("AIエージェントの", 16, False, TEXT),
+    ("1日あたりリクエスト（1年間）", 16, False, TEXT),
+], border=TEAL)
+card(s, 8.3, 3.85, 4.3, 1.95, [
+    ("最大4割減", 30, True, RED),
+    ("人からのトラフィック", 16, False, TEXT),
+    ("（業界によっては1年未満で）", 16, False, SUB),
+], border=RED)
+card(s, 8.3, 6.05, 4.3, 1.7, [
+    ("週5,000億超", 28, True, NAVY),
+    ("身元が確認されたボットの", 16, False, TEXT),
+    ("リクエスト", 16, False, TEXT),
+], border=NAVY)
 
 
-# ---------- 図2: アイソレートの仕組み ----------
+# ---------- 図2: アイソレートで何が変わるか ----------
 s = new_slide()
-rows = [1.95, 3.5, 5.05]
-RH = 0.95
-# 左: エージェントが書いたコード
-for i, y in enumerate(rows):
-    node(s, 0.5, y, 2.4, RH, f"コード{i + 1}", "エージェントが作成", border=NAVY, ssize=15)
-# サーバーとランタイム
-zone(s, 4.6, 0.85, 8.25, 6.25, "1台のサーバー", SLATE, GRAY_BG)
-zone(s, 4.9, 1.45, 7.65, 5.3, "ランタイム（1つのプロセス）", TEAL, TEAL_BG, tabw=4.4)
-for i, y in enumerate(rows):
-    node(s, 5.3, y, 4.1, RH, f"アイソレート{i + 1}", "専用のメモリと変数", border=TEAL)
-    arrow(s, 2.9, y + RH / 2, 5.3, y + RH / 2, SUB)
-label(s, 2.88, rows[0] + RH / 2 - 0.52, 1.75, 0.48, "数ミリ秒で作成", 15, TEAL, True)
-for y in (rows[0] + RH, rows[1] + RH):
-    label(s, 5.3, y + 0.07, 4.1, 0.45, "✘ 互いのメモリは見えない", 16, RED)
-label(s, 5.3, rows[2] + RH + 0.05, 4.1, 0.45, "1つのランタイムで数百〜数千個", 16, TEXT, True)
-v8 = rrect(s, 9.95, rows[0], 2.2, rows[2] + RH - rows[0], NAVY, None, adj=0.1)
-set_text(v8, [("V8エンジン", 18, True, WHITE), ("Chromeと同じ", 16, False, WHITE), ("みんなで共有", 16, False, WHITE)])
-for y in rows:
-    s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(9.4), Inches(y + RH / 2), Inches(9.95), Inches(y + RH / 2)).line.color.rgb = SUB
+NW, NH = 2.2, 1.5
+XS = [3.05, 5.6, 8.15, 10.7]
 
+start = rrect(s, 0.35, 3.1, 1.95, 1.5, SLATE, None)
+set_text(start, [("エージェント", 18, True, WHITE), ("コードを書いた", 16, False, WHITE)])
 
-# ---------- 図3: コンテナとアイソレートの比較 ----------
-s = new_slide()
-CW, GAP = 1.65, 0.2
+# 上：従来（コンテナで隔離）
+zone(s, 2.8, 0.65, 10.3, 3.0, "従来：コンテナで隔離", NAVY, NAVY_BG)
+UY = 1.35
+rrect(s, 2.95, 1.15, 4.95, 1.9, None, RED, dash=True, adj=0.1)
+node(s, XS[0], UY, NW, NH, "コンテナを作る", "OSの環境を用意", border=NAVY)
+node(s, XS[1], UY, NW, NH, "ランタイム起動", "Node.js など", border=NAVY)
+node(s, XS[2], UY, NW, NH, "コードを実行", "コンテナの中で", border=NAVY)
+card(s, XS[3], UY, NW, NH, [
+    ("数百ミリ秒", 18, True, RED), ("メモリ 数百MB", 15, False, TEXT), ("同時数に上限", 15, False, TEXT)
+], border=RED, fill=RED_BG)
+label(s, 2.95, 3.1, 4.95, 0.45, "依頼のたびに毎回やる準備", 16, RED, True)
 
+# 下：アイソレート（Dynamic Workers）
+zone(s, 2.8, 4.1, 10.3, 3.15, "アイソレートで隔離（Dynamic Workers）", TEAL, TEAL_BG, tabw=6.4)
+LY = 4.8
+rrect(s, 2.95, 4.6, 7.5, 1.9, None, TEAL, dash=True, adj=0.1)
+node(s, XS[0], LY, NW, NH, "親Worker", "エージェント本体", border=TEAL)
+node(s, XS[1], LY, NW, NH, "アイソレート", "LOADER.load()", border=TEAL)
+node(s, XS[2], LY, NW, NH, "コードを実行", "権限は親が制限", border=TEAL)
+card(s, XS[3], LY, NW, NH, [
+    ("数ミリ秒", 18, True, TEAL), ("メモリ 数MB", 15, False, TEXT), ("依頼ごとに作成", 15, False, TEXT)
+], border=TEAL, fill=TEAL_MID)
+label(s, 2.95, 6.55, 7.5, 0.45, "すべて同じプロセスの中（ランタイムの準備は1回だけ）", 16, TEAL, True)
 
-def stack(x0, accent, bg, name, shared_runtime):
-    zone(s, x0, 0.8, 5.9, 4.35, name, accent, bg)
-    bar = rrect(s, x0 + 0.3, 4.4, 5.3, 0.55, GRAY_MID, None, adj=0.2)
-    set_text(bar, [("サーバー", 16, True, TEXT)])
-    bar = rrect(s, x0 + 0.3, 3.75, 5.3, 0.55, GRAY_MID, None, adj=0.2)
-    set_text(bar, [("OS", 16, True, TEXT)])
+for y in (UY, LY):
     for i in range(3):
-        cx = x0 + 0.3 + i * (CW + GAP)
-        if shared_runtime:
-            node(s, cx, 1.3, CW, 1.4, f"コード{i + 1}", "アイソレート", border=TEAL, tsize=16, ssize=15)
-        else:
-            rrect(s, cx - 0.05, 1.3, CW + 0.1, 2.35, None, NAVY, adj=0.08)
-            label(s, cx - 0.05, 1.32, CW + 0.1, 0.45, f"コンテナ{i + 1}", 16, NAVY, True)
-            node(s, cx + 0.1, 1.85, CW - 0.2, 0.75, f"コード{i + 1}", None, border=NAVY, tsize=16)
-            rt = rrect(s, cx + 0.1, 2.75, CW - 0.2, 0.75, GRAY_MID, None)
-            set_text(rt, [("ランタイム", 15, True, TEXT)])
-    if shared_runtime:
-        rt = rrect(s, x0 + 0.3, 2.85, 5.3, 0.75, TEAL, None, adj=0.2)
-        set_text(rt, [("ランタイム（1つを共有）", 18, True, WHITE)])
+        arrow(s, XS[i] + NW, y + NH / 2, XS[i + 1], y + NH / 2, SUB)
+arrow(s, 2.3, 3.55, XS[0], UY + NH / 2, SUB)
+arrow(s, 2.3, 4.15, XS[0], LY + NH / 2, SUB)
 
 
-stack(0.5, NAVY, NAVY_BG, "コンテナ", False)
-stack(6.95, TEAL, TEAL_BG, "アイソレート", True)
-# 下: 数字の比較
-node(s, 0.5, 5.5, 2.85, 1.25, "数百ミリ秒", "起動にかかる時間", border=NAVY, tsize=20)
-node(s, 3.55, 5.5, 2.85, 1.25, "数百MB", "動かすのに要るメモリ", border=NAVY, tsize=20)
-node(s, 6.95, 5.5, 2.85, 1.25, "数ミリ秒", "起動にかかる時間", border=TEAL, tsize=20, tcolor=TEAL)
-node(s, 10.0, 5.5, 2.85, 1.25, "数MB", "動かすのに要るメモリ", border=TEAL, tsize=20, tcolor=TEAL)
+# ---------- 図3: コンテナとアイソレートの構成の比較 ----------
+s = new_slide()
+CW, GAP = 1.7, 0.15
+
+
+def layer(x, y, w, text, fill=GRAY_MID, color=TEXT):
+    b = rrect(s, x, y, w, 0.55, fill, None, adj=0.2)
+    set_text(b, [(text, 16, True, color)])
+
+
+def column(cx, top, title, boxes, accent):
+    h = 0.45 + 0.7 * len(boxes) + 0.15
+    rrect(s, cx, top, CW, h, None, accent, adj=0.08)
+    label(s, cx, top + 0.03, CW, 0.42, title, 16, accent, True)
+    for j, (text, fill) in enumerate(boxes):
+        b = rrect(s, cx + 0.1, top + 0.5 + 0.7 * j, CW - 0.2, 0.6, fill, accent if fill == WHITE else None, adj=0.2)
+        set_text(b, [(text, 15, True, TEXT)])
+
+
+# 左：コンテナ
+zone(s, 0.4, 0.65, 6.0, 5.6, "コンテナ", NAVY, NAVY_BG)
+for i in range(3):
+    column(0.7 + i * (CW + GAP), 1.25, f"コンテナ{i + 1}",
+           [("コード", WHITE), ("ランタイム", GRAY_MID), ("ライブラリ等", GRAY_MID)], NAVY)
+layer(0.7, 4.15, 5.4, "コンテナランタイム（containerd など）")
+layer(0.7, 4.8, 5.4, "ホストOS（Linuxカーネル）")
+layer(0.7, 5.45, 5.4, "ハードウェア")
+
+# 右：アイソレート
+zone(s, 6.95, 0.65, 6.0, 5.6, "アイソレート", TEAL, TEAL_BG)
+for i in range(3):
+    column(7.25 + i * (CW + GAP), 1.25, f"アイソレート{i + 1}",
+           [("コード", WHITE), ("専用のヒープ", TEAL_MID)], TEAL)
+layer(7.25, 3.5, 5.4, "V8エンジン（V8サンドボックス）", TEAL, WHITE)
+layer(7.25, 4.15, 5.4, "Workersのランタイム（workerd）", TEAL, WHITE)
+layer(7.25, 4.8, 5.4, "ホストOS（Linuxカーネル）")
+layer(7.25, 5.45, 5.4, "ハードウェア")
+
+# 下：数字と隔離のしくみ
+node(s, 0.4, 6.5, 2.9, 1.05, "数百ミリ秒", "起動にかかる時間", border=NAVY, tsize=20)
+node(s, 3.5, 6.5, 2.9, 1.05, "数百MB", "動かすのに要るメモリ", border=NAVY, tsize=20)
+node(s, 6.95, 6.5, 2.9, 1.05, "数ミリ秒", "起動にかかる時間", border=TEAL, tsize=20, tcolor=TEAL)
+node(s, 10.05, 6.5, 2.9, 1.05, "数MB", "動かすのに要るメモリ", border=TEAL, tsize=20, tcolor=TEAL)
+card(s, 0.4, 7.7, 6.0, 0.6, [("隔離：カーネルの名前空間・cgroups", 16, True, NAVY)], border=NAVY)
+card(s, 6.95, 7.7, 6.0, 0.6, [("隔離：V8サンドボックス＋2層目のサンドボックス", 16, True, TEAL)], border=TEAL)
 
 prs.save(sys.argv[1])

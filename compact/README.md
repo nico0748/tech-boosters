@@ -14,7 +14,7 @@
 - [drafts/](drafts/) 下書き（記事1本 = 1ディレクトリ）
   - `no.1-reservoir-computing-done/` リザバーコンピューティング
   - `no.2-transpose-inner-outer-product-done/` 転置と内積・外積
-  - `no.3-nabla-grad-div-curl/` ナブラ演算子と勾配・発散・回転
+  - `no.3-nabla-grad-div-curl-done/` ナブラ演算子と勾配・発散・回転
   - `no.4-windows-registry-commands/` Windowsのレジストリとコマンド
   - `no.5-c2-server/` C&Cサーバ
   - `no.6-force-learning/` FORCE学習

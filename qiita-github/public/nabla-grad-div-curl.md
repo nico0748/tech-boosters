@@ -4,14 +4,13 @@ tags:
   - 数学
   - ベクトル解析
   - 物理
-private: true
+private: false
+updated_at: ''
+id: null
+organization_url_name: null
+slide: false
+ignorePublish: false
 ---
-<!--
-  コンパクト記事 no.3（草稿。公開前にこのコメントは削除）
-  - 足したいもの：勾配・発散・回転のイメージ図（pptx→png、図のルールに従う）
-  - 関連：no.2 転置と内積・外積（発散は内積、回転はベクトル積の形）
--->
-
 # はじめに
 
 $\nabla$ が出てくると身構えてしまうので、勾配・発散・回転の3つを、偏微分の計算から途中式を省かずにまとめてみました。
@@ -29,6 +28,8 @@ $$
 | 勾配（grad） | $\nabla f$ | スカラー場 | ベクトル場 | いちばん急に増える向きと、その増え方 |
 | 発散（div） | $\nabla \cdot F$ | ベクトル場 | スカラー場 | その点から湧き出している量 |
 | 回転（rot / curl） | $\nabla \times F$ | ベクトル場 | ベクトル場 | その点のまわりの渦の強さと軸の向き |
+
+div は内積、rot はベクトル積の形をしているので、計算方法は前回の記事「[転置と内積・外積を簡単にまとめる](https://qiita.com/nico0748/items/97c5400f2fc565c27a1d)」もあわせてどうぞ。
 
 ただし $\nabla$ は数が入ったふつうのベクトルではなく、「右側にあるものを微分する」という操作を並べたものです。そのため $\nabla f$ を $f \nabla$ と書き換えることはできません。
 
@@ -148,6 +149,11 @@ $$
 - 例：山の標高を $f$ とすると、$\nabla f$ はいちばん急な登り坂の向きを指す
 - 機械学習の勾配降下法は、損失関数の勾配と逆向き（$-\nabla L$）にパラメータを動かす
 
+![勾配による変化](https://raw.githubusercontent.com/nico0748/tech-boosters/35979ffbff508a1518eaf3bb41eff40cba1b843b/compact/drafts/no.3-nabla-grad-div-curl/image/01_%E5%8B%BE%E9%85%8D%E3%81%AB%E3%82%88%E3%82%8B%E5%A4%89%E5%8C%96.png)
+*図1：勾配による変化。上はお椀の形 $f = x^2 + y^2$、下はまっすぐな坂 $f = x + y$ で、左のスカラー場に $\nabla$ を掛けると右のベクトル場になる*
+
+上の段がこの例です。下の段はまっすぐな坂 $f = x + y$ で、$\dfrac{\partial f}{\partial x} = 1$、$\dfrac{\partial f}{\partial y} = 1$ なので $\nabla f = (1, 1)$ になり、どこでも同じ向き・同じ長さの矢印になります。
+
 ## 例2：$f = x^2 y + y z^3$（3次元）
 
 準備で計算した3つの偏微分を並べるだけです。
@@ -210,6 +216,11 @@ $$
 $$
 
 回っているだけで、湧き出しも吸い込みもありません。
+
+例1と例2を図にすると次のようになります。例1はベクトル場を $z = 0$ の面で切って表示しています。
+
+![発散による変化](https://raw.githubusercontent.com/nico0748/tech-boosters/35979ffbff508a1518eaf3bb41eff40cba1b843b/compact/drafts/no.3-nabla-grad-div-curl/image/02_%E7%99%BA%E6%95%A3%E3%81%AB%E3%82%88%E3%82%8B%E5%A4%89%E5%8C%96.png)
+*図2：発散による変化。上は外向きに広がる流れ $F = (x, y, z)$ で $\nabla \cdot F = 3$、下はくるくる回る流れ $F = (-y, x, 0)$ で $\nabla \cdot F = 0$*
 
 ## 例3：$F = (x^2 y,\; yz,\; xz^2)$
 
@@ -301,6 +312,11 @@ $$
 $$
 
 まっすぐ広がっているだけで、渦はありません。
+
+例1と例2を図にすると次のようになります。⊙ は紙面の手前向き（$+z$ 向き）の矢印を表します。
+
+![回転による変化](https://raw.githubusercontent.com/nico0748/tech-boosters/35979ffbff508a1518eaf3bb41eff40cba1b843b/compact/drafts/no.3-nabla-grad-div-curl/image/03_%E5%9B%9E%E8%BB%A2%E3%81%AB%E3%82%88%E3%82%8B%E5%A4%89%E5%8C%96.png)
+*図3：回転による変化。上はくるくる回る流れ $F = (-y, x, 0)$ で $\nabla \times F = (0, 0, 2)$、下は外向きに広がる流れ $F = (x, y, z)$ で $\nabla \times F = (0, 0, 0)$*
 
 ## 例3：$F = (x^2 y,\; yz,\; xz^2)$
 
@@ -426,4 +442,9 @@ $\nabla$ を「偏微分のベクトル」と思えば、grad はスカラー倍
 
 # 参考
 
-- （ベクトル解析の教科書を追記）
+- [ナブラ（Wikipedia）](https://ja.wikipedia.org/wiki/%E3%83%8A%E3%83%96%E3%83%A9)
+- [勾配 (ベクトル解析)（Wikipedia）](https://ja.wikipedia.org/wiki/%E5%8B%BE%E9%85%8D_%28%E3%83%99%E3%82%AF%E3%83%88%E3%83%AB%E8%A7%A3%E6%9E%90%29)
+- [発散 (ベクトル解析)（Wikipedia）](https://ja.wikipedia.org/wiki/%E7%99%BA%E6%95%A3_%28%E3%83%99%E3%82%AF%E3%83%88%E3%83%AB%E8%A7%A3%E6%9E%90%29)
+- [回転 (ベクトル解析)（Wikipedia）](https://ja.wikipedia.org/wiki/%E5%9B%9E%E8%BB%A2_%28%E3%83%99%E3%82%AF%E3%83%88%E3%83%AB%E8%A7%A3%E6%9E%90%29)
+- [ラプラス作用素（Wikipedia）](https://ja.wikipedia.org/wiki/%E3%83%A9%E3%83%97%E3%83%A9%E3%82%B9%E4%BD%9C%E7%94%A8%E7%B4%A0)
+- [18.02SC Multivariable Calculus（MIT OpenCourseWare）](https://ocw.mit.edu/courses/18-02sc-multivariable-calculus-fall-2010/)
