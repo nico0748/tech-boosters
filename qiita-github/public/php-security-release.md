@@ -2,16 +2,18 @@
 title: PHPの脆弱性と修正パッチの公開 〜そのとき何が行われていたのか初学者にも分かるように解説〜
 tags:
   - PHP
-  - セキュリティ
+  - Security
   - 脆弱性
-  - CVE
+  - cve
   - 初心者向け
 private: false
-updated_at: ''
-id: null
+updated_at: '2026-10-27T01:53:26+09:00'
+id: d00acf506ac9fffc364c
 organization_url_name: null
 slide: false
 ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 # はじめに
 
