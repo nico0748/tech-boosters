@@ -12,7 +12,7 @@
 - [templates/](templates/) 記事のテンプレート
   - `fukabori-tai_template.md` 深ぼり隊の記事テンプレート
 - [drafts/](drafts/) 下書き（記事1本 = 1ディレクトリ）
-  - `no.1-xss/` XSSの内部動作（壁打ち形式）
+  - `no.1-xss-done/` XSSの内部動作（壁打ち形式）
   - `no.2-sqli/` SQLインジェクションの内部動作（壁打ち形式）
 - [assets/](assets/) シリーズ共通の素材
   - `icon/` シリーズのロゴ

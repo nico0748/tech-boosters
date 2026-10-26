@@ -19,8 +19,9 @@
   - `no.4-pentestgpt/` PentestGPT（人間が主導し、AIが次の攻撃手順をアシストするペンテスト支援）
   - `no.5-hexstrike-ai/` HexStrike AI（LLMと既存のセキュリティツールをつなぐMCPサーバー）
   - `no.6-deadend-cli/` Deadend CLI（ローカルだけで完結し、エラーから自己修正する自律エージェント）
-  - `no.7-mcp-server-security/` MCPサーバーの構築手順と、セキュリティで気をつけること
+  - `no.7-mcp-server-security-done/` MCPサーバーの構築手順と、セキュリティで気をつけること
   - `no.8-recent-cyberattacks/` 直近のサイバー攻撃について分析してみる（2026年10月：IDCFクラウドとフランスのスーパーの冷蔵設備）
-  - `no.9-lang-series/` Langシリーズは何ができるの（LangChain・LangGraph・LangSmith・Langfuse）
+  - `no.9-lang-series-done/` Langシリーズは何ができるの（LangChain・LangGraph・LangSmith・Langfuse）
   - `no.10-google-selfie-video-verification/` Googleアカウントの認証方法に自撮り動画が追加されてた件について
   - `no.11-php-security-release/` PHPの脆弱性と修正パッチの公開（2026年10月21日の緊急リリースで何が行われていたか）
+  - `no.12-security-days-fall-2026/` Security Days Fall 2026 Tokyoで得たナレッジと気になった技術
