@@ -1,5 +1,5 @@
 ---
-title: Googleアカウントの認証方法に自撮り動画が追加されてた件について
+title: Googleの本人確認、ついに自撮りする時代へ。「自撮り動画認証」を調べてみた
 tags:
   - Google
   - Security
