@@ -15,9 +15,9 @@
   - `no.1-reservoir-computing-done/` リザバーコンピューティング
   - `no.2-transpose-inner-outer-product-done/` 転置と内積・外積
   - `no.3-nabla-grad-div-curl-done/` ナブラ演算子と勾配・発散・回転
-  - `no.4-windows-registry-commands/` Windowsのレジストリとコマンド
-  - `no.5-c2-server/` C&Cサーバ
-  - `no.6-force-learning/` FORCE学習
+  - `no.4-windows-registry-commands-done/` Windowsのレジストリとコマンド
+  - `no.5-c2-server-done/` C&Cサーバ
+  - `no.6-force-learning-done/` FORCE学習
   - `no.7-rppg/` 非接触型容積脈波測定法（rPPG：remote Photoplethysmography）
   - `no.8-dns-records/` DNSとレコード
   - `no.9-agent-api-vs-mcp/` AIエージェントのAPIとMCPの違い
