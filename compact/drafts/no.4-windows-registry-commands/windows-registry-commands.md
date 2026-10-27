@@ -72,6 +72,20 @@ HKCU は独立した場所ではなく、`HKU\<ログオン中のユーザーの
 
 普段 GUI で変えている設定も、裏ではこういうキーに保存されています。
 
+## どのレイヤーで動いているか
+
+![レジストリのアーキテクチャ](image/01_レジストリのアーキテクチャ.png)
+*図1：レジストリを読み書きするときの流れ*
+
+`regedit` も `reg` も PowerShell も、最後は同じ道を通ります。
+
+1. ユーザーモードのレジストリ API（advapi32.dll / KernelBase.dll）が、`HKCU` などのルートキーを `\Registry\User\<SID>` のようなカーネル内のパスに変換します
+2. ntdll.dll が、その呼び出しを `NtOpenKey` などのシステムコールにしてカーネルへ渡します
+3. オブジェクトマネージャーがパスをたどって目的のキーを探し、ACL をチェックしてからハンドルを発行します
+4. レジストリの本体は、カーネル（ntoskrnl.exe）の中の**構成マネージャー**です。キーと値をメモリ上のハイブに載せて高速に読み書きし、変更はあとでディスクのハイブファイル（`SYSTEM`、`NTUSER.DAT` など）へ書き戻します
+
+構成マネージャーには、キーの作成や値の変更を通知してもらう仕組み（`CmRegisterCallbackEx`）があります。EDR や Sysmon がレジストリの変更をログに残せるのは、ここで通知を受け取っているからです。
+
 # コマンド
 
 ## reg（コマンドプロンプト）
@@ -125,10 +139,13 @@ Run キー以外にも、上の「身近なキーの例」にある `RecentDocs`
 
 # まとめ
 
-レジストリは「Windows の設定の置き場所」で、Run キーは調査のときに真っ先に見る場所なのよ。
+レジストリは「Windows の設定の置き場所」で、Run キーは調査のときに真っ先に見る場所です。
 ほかにも見ておくべきキーがあれば、有識者の方教えて欲しいです！
 
 # 参考
 
-- Microsoft Learn「reg」コマンド
-- MITRE ATT&CK T1547.001 Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder
+- Microsoft Learn「reg」 <https://learn.microsoft.com/ja-jp/windows-server/administration/windows-commands/reg>
+- Microsoft Learn「定義済みのキー」 <https://learn.microsoft.com/ja-jp/windows/win32/sysinfo/predefined-keys>
+- Microsoft Learn「レジストリ値の型」 <https://learn.microsoft.com/ja-jp/windows/win32/sysinfo/registry-value-types>
+- Microsoft Learn「CmRegisterCallbackEx 関数」 <https://learn.microsoft.com/ja-jp/windows-hardware/drivers/ddi/wdm/nf-wdm-cmregistercallbackex>
+- MITRE ATT&CK T1547.001 Registry Run Keys / Startup Folder <https://attack.mitre.org/techniques/T1547/001/>
