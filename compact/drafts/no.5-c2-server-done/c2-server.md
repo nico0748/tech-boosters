@@ -11,7 +11,7 @@ private: true
   コンパクト記事 no.5（草稿。公開前にこのコメントは削除）
   - 書き方：攻撃の仕組みの説明は常体寄りの平易な文で、軽いノリは入れない（語調スキルのルール）
   - 裏取り：MITRE ATT&CK（TA0011 ほか参考に挙げた各テクニック）
-  - 足したいもの：C&Cサーバと感染端末の関係の図、痕跡が残る場所の図（pptx→png）
+  - 図1：image/01_C2サーバの通信の流れ.pptx/png（生成スクリプト image/図生成スクリプト.py）
   - ハンズオン資料は再配布不可なので、スライドの中身・画面・通信先はそのまま載せない
 -->
 
@@ -37,7 +37,7 @@ EDR のログを読んでマルウェアの動きを追うハンズオンに参�
 C2サーバの主な役割は次の4つです。
 
 | 役割 | 中身 |
-|---|---|
+| --- | --- |
 | 命令を出す | コマンドの実行、端末内の探索、ほかの端末への横展開などを指示する |
 | 追加のマルウェアを渡す | 最初に入った小さなマルウェア（ローダー）に、本命のマルウェアをダウンロードさせる |
 | 結果やデータを受け取る | コマンドの実行結果や、盗んだファイル・認証情報を受け取る |
@@ -52,6 +52,9 @@ C2サーバの主な役割は次の4つです。
 3. 端末が命令を実行し、結果やデータを送り返す
 4. 1 に戻る
 
+![C2サーバの通信の流れ](image/01_C2サーバの通信の流れ.png)
+*図1：C2サーバの通信の流れ。感染端末のほうから外へ問い合わせ（①）、その応答で命令を受け取り（②）、結果を送り返す（③）。外から社内への接続はファイアウォールで止められるので、この向きになる*
+
 ポイントは、**端末の側から外へ接続しにいく**ことです。
 外から社内の端末へ直接つなぐ通信はファイアウォールで止められやすい一方、社内から外への Web 通信はふつう許可されています。
 そのため、端末から「何か命令ある？」と聞きにいく形にしておけば、ファイアウォールを通り抜けやすくなります。
@@ -61,7 +64,7 @@ C2サーバの主な役割は次の4つです。
 C2 の通信は、見つかると遮断されるので、ふつうの通信にまぎれるように作られます。
 
 | 手口 | 中身 |
-|---|---|
+| --- | --- |
 | ふつうの Web 通信にまぎれる | HTTP / HTTPS でやり取りし、ふつうの閲覧に見せかける |
 | DNS を使う | DNS の問い合わせや応答にデータを埋め込む |
 | 正規のサービスを使う | クラウドストレージや SNS、チャットツールを中継に使う |
@@ -70,7 +73,7 @@ C2 の通信は、見つかると遮断されるので、ふつうの通信に�
 ## 構成の種類
 
 | 構成 | 中身 | 弱点 |
-|---|---|---|
+| --- | --- | --- |
 | 集中型 | 1か所（または少数）のサーバがすべての端末に命令する | サーバを止められると全体が止まる |
 | P2P 型 | 感染端末どうしで命令を中継する | 作りが複雑になる |
 
@@ -85,7 +88,7 @@ EDR（Endpoint Detection and Response）は、端末上のプロセスの起動�
 C2 に関係する痕跡は、主に次の場所に出ます。
 
 | 見る場所 | 何がわかるか | C2 との関係 |
-|---|---|---|
+| --- | --- | --- |
 | 通信のログ | どのプロセスが、どの IP アドレス・ドメインに、どれくらいの間隔で接続したか | C2サーバの接続先そのもの。一定間隔の接続はビーコンの可能性がある |
 | DNS 問い合わせ | どのドメインの名前解決をしたか | C2 のドメインや、DGA で作られたランダムなドメインが出る |
 | プロセスの親子関係 | どのプロセスが、どのプロセスを起動したか | Word やブラウザから見慣れないプロセスが起動していれば、侵入の入口と C2 を担うプロセスが分かる |
@@ -105,7 +108,7 @@ powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand <Base
 永続化でよく使われる場所の例は次のとおりです。
 
 | 場所 | 中身 |
-|---|---|
+| --- | --- |
 | `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` など | ログオン時に自動で起動するプログラムの登録 |
 | スタートアップフォルダ | ログオン時に自動で起動するファイルの置き場所 |
 | タスクスケジューラ | 決まった時刻や条件で起動するタスク |
@@ -152,15 +155,14 @@ C2サーバの接続先は、マルウェアの中に設定（コンフィグ）
 - 感染端末の側から定期的に外へ接続しにいく（ビーコン）形が多い
 - 痕跡は、EDR のログ（通信・プロセスの親子関係・コマンドライン・ファイル・永続化）、プロキシや DNS のログ、マルウェア本体の設定に残る
 
-「どのプロセスが、どこへ、どんな間隔で通信しているか」を押さえるのが、C2 を見つける近道なのよ。
-ほかに有効な検知のしかたがあれば、有識者の方教えて欲しいです！
+「どのプロセスが、どこへ、どんな間隔で通信しているか」を押さえるのが、C2サーバ発見の鍵となりそう。
 
 # 参考
 
-- MITRE ATT&CK TA0011 Command and Control https://attack.mitre.org/tactics/TA0011/
-- MITRE ATT&CK T1071 Application Layer Protocol https://attack.mitre.org/techniques/T1071/
-- MITRE ATT&CK T1568.002 Domain Generation Algorithms https://attack.mitre.org/techniques/T1568/002/
-- MITRE ATT&CK T1102 Web Service https://attack.mitre.org/techniques/T1102/
-- MITRE ATT&CK T1059.001 PowerShell https://attack.mitre.org/techniques/T1059/001/
-- MITRE ATT&CK T1547.001 Registry Run Keys / Startup Folder https://attack.mitre.org/techniques/T1547/001/
-- MITRE ATT&CK T1053.005 Scheduled Task https://attack.mitre.org/techniques/T1053/005/
+- MITRE ATT&CK TA0011 Command and Control <https://attack.mitre.org/tactics/TA0011/>
+- MITRE ATT&CK T1071 Application Layer Protocol <https://attack.mitre.org/techniques/T1071/>
+- MITRE ATT&CK T1568.002 Domain Generation Algorithms <https://attack.mitre.org/techniques/T1568/002/>
+- MITRE ATT&CK T1102 Web Service <https://attack.mitre.org/techniques/T1102/>
+- MITRE ATT&CK T1059.001 PowerShell <https://attack.mitre.org/techniques/T1059/001/>
+- MITRE ATT&CK T1547.001 Registry Run Keys / Startup Folder <https://attack.mitre.org/techniques/T1547/001/>
+- MITRE ATT&CK T1053.005 Scheduled Task <https://attack.mitre.org/techniques/T1053/005/>
