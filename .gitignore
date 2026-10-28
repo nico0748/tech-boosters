@@ -8,3 +8,7 @@ pyrefly.toml
 
 # 執筆ルールのテンプレ（ローカル専用・リモートには出さない）
 deep-dive/templates/fukabori-tai_template.md
+
+# Office の一時ファイル・書き出し途中のファイル
+.~lock.*#
+*.tmp
