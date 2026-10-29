@@ -36,7 +36,5 @@
   - `no.22-websocket/` WebSocket
   - `no.23-container-escape/` コンテナエスケープ
   - `no.24-rag-pull/` RAG-Pull
-  - `no.25-criminal-psychology-cyber-attack/` 犯罪心理学とサイバー攻撃の振る舞いの考察
   - `no.26-rsa/` RSA暗号
   - `no.27-lean-formal-verification/` Leanと形式検証
-  - `no.28-nyxis/` Nyxis（数学的に情報漏洩がないことを保証するバックエンドフレームワーク）
