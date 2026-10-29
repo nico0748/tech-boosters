@@ -12,3 +12,7 @@ deep-dive/templates/fukabori-tai_template.md
 # Office の一時ファイル・書き出し途中のファイル
 .~lock.*#
 *.tmp
+
+# ローカル専用スキル・文体ガイド（Gitに載せない）
+.claude/skills/newt-style-article-craft/
+writing-guides/
