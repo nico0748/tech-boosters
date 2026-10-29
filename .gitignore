@@ -14,5 +14,5 @@ deep-dive/templates/fukabori-tai_template.md
 *.tmp
 
 # ローカル専用スキル・文体ガイド（Gitに載せない）
-.claude/skills/newt-style-article-craft/
+.claude/skills/new-style-article-craft/
 writing-guides/
