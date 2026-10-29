@@ -7,7 +7,7 @@ tags:
   - langfuse
   - LLM
 private: false
-updated_at: '2026-10-21T04:40:40+09:00'
+updated_at: '2026-10-30T05:14:47+09:00'
 id: 114cefa0a693cf2b9970
 organization_url_name: null
 slide: false
