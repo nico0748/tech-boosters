@@ -26,3 +26,5 @@
   - `no.11-php-security-release-done/` PHPの脆弱性と修正パッチの公開（2026年10月21日の緊急リリースで何が行われていたか）
   - `no.12-security-days-fall-2026/` Security Days Fall 2026 Tokyoで得たナレッジと気になった技術
   - `no.13-agentic-internet/` AIエージェントのためのインターネット！？Agentic Internetについて詳しく見てみる
+  - `no.14-criminal-psychology-cyber-attack/` 犯罪心理学とサイバー攻撃の振る舞いについて考察してみる
+  - `no.15-nyxis/` 数学的に情報漏洩がないことを保証するバックエンドフレームワーク「Nyxis」を数弱が理解してみる
