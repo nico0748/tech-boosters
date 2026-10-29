@@ -10,6 +10,7 @@ Qiitaに技術記事を投稿するための作業フォルダです。3つの�
 | [retrospective/](retrospective/) | セキュリティ1年振り返り | セキュリティに興味を持ってからここまでの1年を振り返る |
 | [compact/](compact/) | コンパクト記事 | 技術・システム・ツールを、ほんとうに簡単にまとめる |
 | [other/](other/) | 自由記事 | シリーズに当てはまらない記事を自由に置く（小ネタ・ハマった話など） |
+| [x-posts/](x-posts/x-posts.md) | - | 公開した記事を X で紹介する投稿文の下書き |
 | [icon/](icon/) | - | シリーズのロゴ画像 |
 | [qiita-github/](qiita-github/) | - | Qiita CLI + GitHub Actionsで記事を投稿する（`public/` の記事が投稿される） |
 
