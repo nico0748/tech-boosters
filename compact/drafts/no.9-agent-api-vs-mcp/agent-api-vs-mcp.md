@@ -1,75 +1,405 @@
 ---
-title: AIエージェントのAPIとMCPの違いを簡単にまとめる
+title: Claudeを使うアプリは、従量課金のAPIで動かすよりMCPサーバで配るほうが安かった
 tags:
   - MCP
   - AIエージェント
   - API
+  - Claude
   - LLM
 private: true
 ---
 <!--
   コンパクト記事 no.9（草稿。公開前にこのコメントは削除）
-  - 裏取り：MCP の公式仕様（modelcontextprotocol.io）、各社 LLM API の tool use / function calling のドキュメント
-  - 足したいもの：「API を直接つなぐ」と「MCP でつなぐ」の比較図（pptx→png）
-  - 関連：other no.7 MCPサーバーの構築とセキュリティ、retrospective no.8
+  - 2026-11-01 Nico：主張は「Claude のプランを契約しているなら、アプリを MCP でプランにつないで動かすほうが、従量課金の API で動かすよりコスパが良い」。そのためのメリデメ整理
+  - 裏取り（2026-11-01）：
+    - MCP 公式仕様 2026-07-28 版（Overview / Transports / Changelog の Deprecated：Sampling 非推奨）
+    - Claude API の Pricing（Tool use pricing）
+    - Claude Code ドキュメント「Legal and compliance」の Authentication and credential use
+    - Claude ヘルプセンター「有料プランと API は別請求」「カスタムコネクタ（リモート MCP）」
+  - 図1：image/01_従量課金APIとMCPでの動かし方.pptx（生成スクリプトは image/図生成スクリプト.py）
+  - 図2・図3：image/02_翻訳アプリの構成_従量課金API.pptx、image/03_翻訳アプリの構成_MCP.pptx（生成スクリプトは image/図2_3生成スクリプト.py）
+  - 図2の費用の試算は仮定つきの目安（論文1本＝入力1万・出力1.5万トークン、Claude Sonnet 5.5）
+  - 料金の数字は 2026-11-01 時点。公開前にもう一度確認する
+  - 2026-11-04：MCP Advent Calendar 2026（https://qiita.com/advent-calendar/2026/mcp）向けに強化。
+    - 「MCP サーバを実際に作ってみる」節を追加。コードは code/paper-translate-mcp/（SDK 1.32.1・unpdf 1.9.0・zod 4.6.7 に固定）
+    - 動作確認は SDK の MCP クライアント（test-client.mjs）から stdio でつないだところまで。Claude Desktop での確認と画面のスクショは Nico の Mac でまだ
+    - npm には未公開（paper-translate-mcp という名前は 2026-11-04 時点で空き）。公開しないなら npx の設定例は「公開した場合」と書いたままにする
+    - カレンダーの日付が決まったら「はじめに」の ◯日目 を埋める
+    - 2026-11-04 再確認：Sonnet 5.5 の料金（入力 $2・出力 $10）、Legal and compliance の認証の記述、仕様 2026-07-28 版の Sampling 非推奨 → いずれも変わりなし
+  - 関連：other no.7 MCPサーバーの構築とセキュリティ、compact no.20 ローカルMCPとリモートMCP
 -->
 
 # はじめに
 
-「エージェントにツールを使わせるなら API でよくない？MCP って何が違うの？」と思ったので整理してみました。
+この記事は [Model Context Protocol(MCP) Advent Calendar 2026](https://qiita.com/advent-calendar/2026/mcp) の◯日目の記事です。
+
+Claude を使ったアプリを作って公開しようとすると、Claude をどう動かすかで2通りの作り方があります。自分は Claude のプランを契約しているので、「アプリを MCP でプランにつないで動かすほうが、従量課金の API で動かすよりコスパが良いのでは？」と思い、それぞれのメリット・デメリットを整理してみました。
 
 # ひとことで言うと
 
-- **API**：あるサービスを、プログラムから使うための窓口。サービスごとに形がばらばら
-- **MCP（Model Context Protocol）**：AI アプリと外部のツール・データを、**共通の決まった形でつなぐためのプロトコル**
+- **従量課金の API で動かす**：アプリが、開発者の API キーで Claude を呼ぶ。Web アプリとして誰にでも公開できるが、**使われるほど開発者への請求が増える**ので、有料プランなどで回収する必要がある
+- **MCP ＋ Claude のプランで動かす**：アプリを MCP サーバとして作り、ユーザーが自分の Claude（Claude Desktop や Claude Code）につなぐ。**Claude の利用料は各ユーザーのプランの中で済む**ので、開発者は Claude の料金を払わずに、オープンソースとして配れる
 
-MCP は API の代わりではなく、**API の手前にかぶせる共通の差し込み口**だと考えると分かりやすいです。MCP サーバの中身は、たいてい既存の API を呼んでいます。
+![従量課金APIとMCPでの動かし方](image/01_従量課金APIとMCPでの動かし方.png)
+*図1：従量課金の API で動かす場合（上）と、MCP で Claude のプランにつなぐ場合（下）。Claude の料金の請求先が、開発者か各ユーザーかで分かれる*
 
-# API を直接つなぐ場合
+# 従量課金の API で動かす場合
 
-LLM の API にある tool use（function calling）を使うと、エージェントに API を呼ばせられます。
+- 開発者が Claude Console で API キーを発行し、アプリのサーバに置く。アプリはそのキーで Claude API を呼ぶ
+- 料金は、送った入力トークンと返ってきた出力トークンの数で決まる。たとえば Claude Sonnet 5.5 は、100万トークンあたり入力 $2・出力 $10（2026年11月時点）
+- ツールを使わせる場合は、ツールの定義やツールの結果も入力トークンとして課金される
+- 請求はすべて開発者に来る。ユーザーが増えるほど、1人が使うほど金額が増える
 
-1. 開発者が、ツールの名前・説明・引数の形（JSON Schema）をアプリのコードに書く
-2. LLM が「このツールをこの引数で呼びたい」と返す
-3. アプリが実際に API を呼び、結果を LLM に返す
+Claude の契約を持っていない人でも使えるサービスにできるのが、いちばんの強みです。
 
-この方法だと、**ツールの定義と呼び出しのコードを、アプリごと・サービスごとに書く**必要があります。
-アプリが M 個、サービスが N 個あると、つなぎ込みが最大 M × N 通りになります。
+# MCP ＋ Claude のプランで動かす場合
 
-# MCP でつなぐ場合
+- アプリの機能を、MCP サーバ（Claude から呼べるツール）として作る
+- ユーザーは、自分の Claude Desktop や Claude Code にその MCP サーバを追加する
+- ユーザーが Claude に頼むと、Claude が必要に応じてツールを呼び、アプリが動く
+- Claude の推論はユーザーのプランの利用枠で行われ、開発者に Claude の請求は来ない
 
-MCP では、役割が次のように分かれます。
+MCP サーバをユーザーの PC で動かす形（ローカル MCP、stdio）なら、開発者はサーバ代もかかりません。GitHub などでオープンソースとして公開しておけば、インストールした人がそれぞれ自分のプランでつないで動かせます。
 
-| 役割 | 中身 | 例 |
-|---|---|---|
-| ホスト | ユーザーが使う AI アプリ | Claude Desktop、Claude Code、IDE |
-| クライアント | ホストの中で、MCP サーバ1つとつながる部分 | — |
-| サーバ | ツールやデータを MCP の形で公開するプログラム | GitHub、Slack、ファイルシステムの MCP サーバ |
-
-- サーバは、ツール（tools）・リソース（resources）・プロンプト（prompts）を公開する
-- やり取りは JSON-RPC 2.0 で、つなぎ方（トランスポート）は stdio か Streamable HTTP
-- サービス側が MCP サーバを1つ作れば、MCP に対応したどのアプリからも使える。つなぎ込みが M + N 通りで済む
+なお、MCP サーバをインターネット上に置いて（リモート MCP）、claude.ai の「カスタムコネクタ」からつないでもらう方法もあります（Free プランは1つまで）。この場合はサーバの運用費が開発者にかかりますが、Claude の利用料はやはり各ユーザーのプラン側です。
 
 # 比べると
 
-| | API を直接つなぐ | MCP でつなぐ |
+| | 従量課金の API | MCP ＋ Claude のプラン |
 |---|---|---|
-| ツールの定義を書く場所 | アプリのコード | MCP サーバ |
-| 新しいツールを足すとき | アプリを直す | サーバをつなぐだけ |
-| ほかのアプリでの使い回し | しにくい | しやすい |
-| 向いている場面 | 1つのアプリで、決まった少数の API を使う | いろいろなアプリから、たくさんのツールを使う |
+| Claude の料金を払う人 | 開発者 | 各ユーザー（自分のプラン） |
+| 開発者の費用 | 利用量に比例して増える | ローカル MCP ならほぼかからない |
+| 公開のしかた | Web アプリ・サービスとして公開 | オープンソースで配り、各自がインストール |
+| 使える人 | 誰でも（Claude の契約は不要） | Claude のプランを持ち、MCP を設定できる人 |
+| 画面（UI） | 自由に作れる | Claude のチャット画面が基本 |
+| モデル・プロンプトの制御 | 開発者が決められる | ユーザーの環境と Claude に任せる |
+| 使える量の上限 | API のレート制限と予算 | ユーザーのプランの利用上限 |
+| お金の回収 | 有料プランなどが必要 | いらない（無料で配れる） |
+
+# 具体例：翻訳アプリで比べる
+
+「英語の論文を日本語に訳すアプリ」を、両方のやり方で作るとどうなるかを考えてみます。
+
+## 従量課金の API で作る場合
+
+ここでは AWS で作る場合を例にします（ほかのクラウドでも、置くものはほぼ同じです）。
+
+![翻訳アプリの構成（従量課金のAPI）](image/02_翻訳アプリの構成_従量課金API.png)
+*図2：従量課金の API で動かす翻訳アプリの構成（AWS の例）。止まらないように AZ を2つに分け、認証・ジョブの列・DB・API キーの保管まで開発者が持つ*
+
+1. ユーザーのブラウザが Route 53 で名前を引き、CloudFront 経由で S3 から画面のファイルを受け取る
+2. ユーザーがログインする。会員の管理は Cognito に任せる
+3. 原文を送ると、CloudFront → インターネットゲートウェイ → ALB を通って API サーバ（ECS）に届く。API サーバはログインを確かめ、RDS で今月の利用量が残っているかを見てから、原文を S3 に置き、翻訳ジョブを SQS に入れる
+4. 翻訳ワーカー（ECS）が SQS からジョブを取り出し、Secrets Manager から Claude API のキーを受け取る。原文を Claude に渡せる長さに分け、プロンプト（訳し方の指示や用語集）を付けて、NAT ゲートウェイ経由で Claude API を呼ぶ
+5. 返ってきた訳をつなげて S3 に保存し、使ったトークン数を RDS に記録する
+6. 月ごとに、利用量に応じて決済サービスで請求する
+
+論文の翻訳は時間がかかるので、API サーバがその場で Claude を待つのではなく、SQS に入れてワーカーが順に処理する形にしています。開発者が作って運用するものは、画面・認証・API サーバ・ワーカー・DB・ジョブの列・API キーの保管・決済と、かなり多くなります。
+
+費用も見積もってみます。論文1本を入力1万トークン・出力1.5万トークンとし、Claude Sonnet 5.5（100万トークンあたり入力 $2・出力 $10）で訳すと、
+
+- 入力：10,000 ÷ 1,000,000 × $2 ＝ $0.02
+- 出力：15,000 ÷ 1,000,000 × $10 ＝ $0.15
+
+で、1本あたり約 $0.17 です。ユーザー1,000人が月に20本ずつ訳すと、20,000本 × $0.17 ＝ **月に約 $3,400** が開発者に請求されます（仮定を置いた目安です）。これを回収するには、有料プランにするしかありません。
+
+## MCP ＋ Claude のプランで作る場合
+
+![翻訳アプリの構成（MCP＋Claudeのプラン）](image/03_翻訳アプリの構成_MCP.png)
+*図3：MCP で Claude のプランにつなぐ翻訳アプリの構成。開発者のサーバはなく、翻訳アプリは Claude Desktop の子プロセスとしてユーザーの PC で動く*
+
+1. ユーザーが、Claude Desktop の設定ファイル（`claude_desktop_config.json`）に、翻訳アプリを `npx` で起動するコマンドを登録する。アプリを npm に公開しておけば、初回の起動時にパッケージがダウンロードされる
+2. Claude Desktop は起動時に設定ファイルを読み、翻訳アプリを子プロセスとして起動する。両者は標準入出力（stdio）で JSON-RPC のメッセージをやり取りする
+3. ユーザーがチャット画面で「この論文を訳して」と頼む。会話は HTTPS で Anthropic のクラウドに送られ、Claude が `read_document` を呼ぶと決める
+4. MCP クライアントが翻訳アプリに呼び出しを送る。翻訳アプリは `papers/` の PDF を読み、段落ごとに分けて返す
+5. 結果は Claude に送られ、Claude は `get_glossary` で受け取った用語集に沿って訳す。この推論が、ユーザーのプランの利用枠で行われる
+6. Claude が `save_translation` を呼び、翻訳アプリが訳を `translations/` に保存する
+
+開発者が作るのは、3つのツールを持つ MCP サーバだけです。GitHub と npm に公開しておけば、あとはユーザーが各自の PC で動かします。開発者のサーバも、Claude の請求も発生しません。
+
+## 例で見るメリット・デメリット
+
+| | 従量課金の API 版 | MCP ＋ プラン版 |
+|---|---|---|
+| 開発者の費用 | 上の試算だと Claude だけで月に約 $3,400。これに AWS の利用料が乗る | ほぼ0円。GitHub と npm に置くだけ |
+| 作るもの | 画面・認証・API サーバ・ワーカー・DB・ジョブの列・決済 | ツール3つの MCP サーバ |
+| 使える人 | ブラウザがあれば誰でも | Claude のプランを持ち、MCP サーバを入れられる人 |
+| 画面 | 原文と訳を左右に並べる、など自由に作れる | Claude のチャット画面。訳はファイルで確認する |
+| 訳の品質 | モデル・プロンプト・用語集を開発者が固定できる | ユーザーが選んだモデルと会話に左右される。ツールの説明文で頼むことはできるが、強制はできない |
+| 長い論文 | サーバが分けて順に処理するので、ユーザーは待つだけ | 会話の中で少しずつ読んで訳すので、途中で上限に当たると止まる |
+| 原文の行き先 | 開発者のサーバと Anthropic | ユーザーの PC と Anthropic（開発者には届かない） |
+
+翻訳アプリの場合、MCP 版は開発者の負担がほぼ0になる一方で、画面や訳の品質の作り込みはユーザーの Claude に任せることになります。
+
+# MCP 版の翻訳アプリを実際に作ってみる
+
+比べるだけだと「MCP サーバだけ作ればいい」がどのくらいの量なのかわからないので、図3の翻訳アプリを実際に作ってみました。
+
+## 使ったもの
+
+- Node.js 22
+- MCP の TypeScript SDK（`@modelcontextprotocol/sdk` 1.32.1）
+- PDF からテキストを取り出す `unpdf`（1.9.0）
+- 引数の型を書く `zod`（4.6.7）
+
+フォルダの構成は次のとおりです。
+
+```text
+paper-translate-mcp/
+├── index.js         … MCP サーバ本体
+├── package.json
+└── test-client.mjs  … 動作確認用のクライアント
+
+作業フォルダ（PAPER_DIR で指定）/
+├── papers/          … 訳したい PDF を置く
+├── glossary.json    … 用語集（英語→日本語）
+└── translations/    … 訳がここに保存される
+```
+
+## ツールを1つ登録する
+
+ツールは `registerTool` で、名前・説明・引数の型・処理の4つを渡して登録します。`read_document` はこうなります。
+
+```js:index.js（read_document の部分）
+server.registerTool(
+  "read_document",
+  {
+    description:
+      "papers/ にある英語論文の PDF を読み、段落の配列を返す。長い論文は start と count で少しずつ読む",
+    inputSchema: {
+      file: z.string().describe("papers/ の中の PDF のファイル名"),
+      start: z.number().int().min(0).default(0).describe("何段落目から読むか"),
+      count: z.number().int().min(1).max(50).default(20).describe("何段落読むか"),
+    },
+    annotations: { readOnlyHint: true },
+  },
+  async ({ file, start, count }) => {
+    const buf = await readFile(path.join(PAPERS, safeName(file)));
+    const pdf = await getDocumentProxy(new Uint8Array(buf));
+    const { text } = await extractText(pdf, { mergePages: true });
+    const paragraphs = toParagraphs(text);
+    const result = {
+      file,
+      total: paragraphs.length,
+      start,
+      paragraphs: paragraphs.slice(start, start + count),
+      next: start + count < paragraphs.length ? start + count : null,
+    };
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+```
+
+ポイントは3つです。
+
+- **説明文（`description`）は Claude が読む**：Claude はこの文を見て、いつ・どう呼ぶかを決めます。「長い論文は start と count で少しずつ読む」と書いておくと、論文を一度に全部読まず、`next` を見ながら続きを読んでくれることを期待できます（強制はできません）
+- **1回に返す量を絞る**：論文を丸ごと返すと、それだけで会話の長さを使い切ります。20段落ずつ返し、続きの位置を `next` で伝えるようにしました
+- **ファイル名だけを受け付ける**：`safeName` で `../` などを弾き、`papers/` の外のファイルを読めないようにしています
+
+`get_glossary` は `glossary.json` を読んで返すだけ、`save_translation` は受け取った訳を `translations/<元のファイル名>.ja.md` に書くだけです。翻訳そのものはどのツールもしていません。訳すのはユーザーの Claude です。
+
+<details><summary>index.js の全体</summary>
+
+```js:index.js
+#!/usr/bin/env node
+// 論文翻訳の MCP サーバ（最小構成）
+// 推論（翻訳そのもの）はしない。PDF を読む・用語集を渡す・訳を保存する、の3つだけ
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+import { readFile, writeFile, appendFile, mkdir } from "node:fs/promises";
+import path from "node:path";
+import { extractText, getDocumentProxy } from "unpdf";
+
+// 作業フォルダ。この外のファイルには触らない
+const ROOT = path.resolve(process.env.PAPER_DIR ?? process.cwd());
+const PAPERS = path.join(ROOT, "papers");
+const OUT = path.join(ROOT, "translations");
+
+// ファイル名だけを受け付け、「../」などでフォルダの外に出られないようにする
+function safeName(name) {
+  const base = path.basename(name);
+  if (base !== name || base.startsWith(".")) {
+    throw new Error(`ファイル名だけを指定してください: ${name}`);
+  }
+  return base;
+}
+
+// 段落に分ける（空行、または行末の「.」で区切る）
+function toParagraphs(text) {
+  return text
+    .split(/\n\s*\n|(?<=\.)\n/)
+    .map((p) => p.replace(/\s*\n\s*/g, " ").trim())
+    .filter((p) => p.length > 0);
+}
+
+const server = new McpServer({ name: "paper-translate", version: "0.1.0" });
+
+server.registerTool(
+  "read_document",
+  {
+    description:
+      "papers/ にある英語論文の PDF を読み、段落の配列を返す。長い論文は start と count で少しずつ読む",
+    inputSchema: {
+      file: z.string().describe("papers/ の中の PDF のファイル名"),
+      start: z.number().int().min(0).default(0).describe("何段落目から読むか"),
+      count: z.number().int().min(1).max(50).default(20).describe("何段落読むか"),
+    },
+    annotations: { readOnlyHint: true },
+  },
+  async ({ file, start, count }) => {
+    const buf = await readFile(path.join(PAPERS, safeName(file)));
+    const pdf = await getDocumentProxy(new Uint8Array(buf));
+    const { text } = await extractText(pdf, { mergePages: true });
+    const paragraphs = toParagraphs(text);
+    const result = {
+      file,
+      total: paragraphs.length,
+      start,
+      paragraphs: paragraphs.slice(start, start + count),
+      next: start + count < paragraphs.length ? start + count : null,
+    };
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+server.registerTool(
+  "get_glossary",
+  {
+    description: "訳語をそろえるための用語集（英語→日本語）を返す。訳す前に一度呼ぶ",
+    inputSchema: {},
+    annotations: { readOnlyHint: true },
+  },
+  async () => {
+    let glossary = {};
+    try {
+      glossary = JSON.parse(await readFile(path.join(ROOT, "glossary.json"), "utf8"));
+    } catch {
+      // 用語集がなければ空で返す
+    }
+    return { content: [{ type: "text", text: JSON.stringify(glossary, null, 2) }] };
+  }
+);
+
+server.registerTool(
+  "save_translation",
+  {
+    description:
+      "訳した日本語を translations/ に Markdown で保存する。続きを足すときは append を true にする",
+    inputSchema: {
+      file: z.string().describe("元の PDF のファイル名"),
+      text: z.string().describe("訳した日本語（Markdown）"),
+      append: z.boolean().default(false).describe("既存の訳の後ろに足すなら true"),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false },
+  },
+  async ({ file, text, append }) => {
+    const name = safeName(file).replace(/\.pdf$/i, "") + ".ja.md";
+    await mkdir(OUT, { recursive: true });
+    const dest = path.join(OUT, name);
+    await (append ? appendFile : writeFile)(dest, text + "\n", "utf8");
+    return { content: [{ type: "text", text: `translations/${name} に保存しました` }] };
+  }
+);
+
+// stdio でホスト（Claude Desktop など）とつなぐ
+// stdout は JSON-RPC 専用なので、ログは必ず stderr に出す
+await server.connect(new StdioServerTransport());
+console.error(`paper-translate MCP server started (PAPER_DIR=${ROOT})`);
+```
+
+</details>
+
+## Claude Desktop につなぐ
+
+Claude Desktop の設定ファイル `claude_desktop_config.json`（macOS では `~/Library/Application Support/Claude/` にある）に、サーバを起動するコマンドを書きます。
+
+```json:claude_desktop_config.json
+{
+  "mcpServers": {
+    "paper-translate": {
+      "command": "node",
+      "args": ["/Users/you/paper-translate-mcp/index.js"],
+      "env": { "PAPER_DIR": "/Users/you/papers-work" }
+    }
+  }
+}
+```
+
+npm に公開した場合は、`"command": "npx"`、`"args": ["-y", "paper-translate-mcp"]` にすれば、ユーザーはリポジトリを clone しなくても使えます。
+
+## 動かしてみる
+
+Claude Desktop の代わりに、SDK に入っている MCP クライアントからサーバを起動して、3つのツールを順に呼んでみました（`test-client.mjs`）。クライアントは `node index.js` を子プロセスとして起動し、stdio でつなぎます。Claude Desktop がサーバとつなぐときと同じ形です。
+
+```text:実行結果（抜粋）
+tools: [ 'read_document', 'get_glossary', 'save_translation' ]
+{
+  "file": "sample.pdf",
+  "total": 3,
+  "start": 0,
+  "paragraphs": [
+    "Reservoir computing is a framework for training recurrent neural networks.",
+    "In this approach, only the readout weights are trained, while the reservoir is kept fixed.",
+    "We show that the echo state property is essential for stable learning."
+  ],
+  "next": null
+}
+translations/sample.ja.md に保存しました
+isError: true ファイル名だけを指定してください: ../glossary.json
+```
+
+PDF が段落に分かれて返り、訳が保存され、`../` を付けたファイル名はエラーになりました。
+
+<!-- TODO（Nico の Mac で）：Claude Desktop につないで「papers/ の sample.pdf を用語集に沿って訳して」と頼んだときの画面のスクショをここに入れる -->
+
+コードは `index.js` が約100行で、これに `package.json` が付くだけです。図2の AWS 構成と比べると、開発者が作るものの差がはっきりわかります。
+
+## つまずいたところ
+
+**stdout にログを出すと壊れる**
+stdio の MCP サーバでは、標準出力は JSON-RPC のメッセージ専用です。`console.log` でログを出すと、クライアントがそれをメッセージとして読もうとして失敗します。ログは `console.error`（標準エラー出力）に出します。
+
+**SDK が対応している仕様のバージョンは、最新の仕様より古い**
+MCP の仕様は 2026-07-28 版で、`initialize` での最初のあいさつ（ハンドシェイク）をなくしてステートレスにするなど大きく変わりました。一方、今回使った TypeScript SDK 1.32.1 が対応しているのは 2025-11-25 版までで、つなぐときは従来どおり `initialize` を送ります。仕様を読みながら書くときは、使っている SDK がどの版に対応しているかを先に確かめておくと混乱しません。
+
+# 気をつけること
+
+## MCP サーバの中から、ユーザーのプランで Claude を呼ぶことはできない
+
+MCP では、Claude が考えてツール（MCP サーバ）を呼ぶ、という向きで動きます。サーバの中で「この文章を Claude に要約させたい」と思っても、サーバ側からユーザーのプランで Claude を呼ぶことはできません。
+
+以前の仕様には、サーバからホストに LLM の呼び出しを頼める「サンプリング」という機能がありました。しかし 2026-07-28 版の仕様で非推奨になり、移行先として「LLM の API と直接つなぐ」ことが挙げられています。
+そのため、**考える部分はユーザーの Claude に任せ、MCP サーバはツールとデータの提供に徹する**設計にする必要があります。
+
+## プランのログインを自作アプリに組み込むのは規約違反
+
+「ユーザーに Claude のアカウントでログインしてもらい、そのプランで自作アプリから Claude を呼ぶ」という作り方は認められていません。Anthropic は、第三者の開発者が自分のアプリで Claude.ai のログインを提供したり、ユーザーの Free・Pro・Max プランの認証情報を経由してリクエストを流したりすることを禁止しています。製品やサービスを作る開発者は、Claude Console の API キーを使うよう案内されています。
+
+MCP の形なら、ユーザーのログインは Anthropic のアプリ（Claude Desktop や Claude Code）の中で完結し、開発者はプランの認証情報に触れません。
+
+## プランの上限は「ふつうの個人利用」が前提
+
+Pro・Max プランの利用上限は、ふつうの個人の使い方を想定したものです。重い処理を何度も回すアプリだと、ユーザーがすぐ上限に当たる可能性があります。
 
 # セキュリティで気をつけること
 
-- MCP サーバは、エージェントにファイル操作や外部サービスの操作をさせる入口になる。信頼できないサーバはつながない
-- ツールの説明文にエージェントへの指示を仕込む攻撃（ツールポイズニング）や、ツールの結果を経由したプロンプトインジェクションに注意する
-- 詳しくは other no.7（MCPサーバーの構築手順と、セキュリティで気をつけること）
+- 従量課金の API キーは、漏れるとそのまま他人に使われて請求が来る。コードや公開リポジトリに直接書かない
+- MCP サーバとして配る場合、ユーザーは自分の PC で他人のコードを動かすことになる。権限を最小限にし、何をするサーバなのかを README に明記する
+- ツールの説明文にエージェントへの指示を仕込む攻撃（ツールポイズニング）や、ツールの結果を経由したプロンプトインジェクションにも注意する
+- MCP のセキュリティは[MCPサーバーを自分で立ててみて考えた構築の手順とセキュリティの勘所](https://qiita.com/nico0748/items/a2e5c48aa746c3010923)に詳しくまとめています
 
 # まとめ
 
-API は「サービスの窓口」、MCP は「その窓口を AI アプリにつなぐ共通の差し込み口」なのよ。
+Claude のプランを持っている人が使うアプリなら、MCP サーバとして配るのが、開発者にとっていちばん安上がりでした。実際に作ってみても、開発者が書くのはツール3つ・約100行で済み、サーバ代も Claude の請求もかかりません。そのかわり、使えるのは Claude を契約していて MCP を設定できる人に限られ、画面も Claude のチャットに寄ります。誰にでも使ってほしいサービスなら従量課金の API、Claude ユーザー向けの道具なら MCP、と「誰に使ってもらうか」で選ぶのが良さそうです。
 この整理でずれているところがあれば、有識者の方教えて欲しいです！
 
 # 参考
 
-- Model Context Protocol 公式サイト（modelcontextprotocol.io）の仕様
+- [Model Context Protocol 仕様（2026-07-28 版）](https://modelcontextprotocol.io/specification/2026-07-28)
+- [Key Changes（MCP 仕様 2026-07-28 版の変更点）](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
+- [Pricing（Claude API）](https://platform.claude.com/docs/en/about-claude/pricing)
+- [Legal and compliance（Claude Code ドキュメント）](https://code.claude.com/docs/en/legal-and-compliance)
+- [Claude の有料プランと API の請求について（Claude ヘルプセンター）](https://support.claude.com/en/articles/9876003)
+- [カスタムコネクタ（リモート MCP）の使い方（Claude ヘルプセンター）](https://support.claude.com/en/articles/11175166)
+- [MCP TypeScript SDK（GitHub）](https://github.com/modelcontextprotocol/typescript-sdk)
