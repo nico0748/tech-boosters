@@ -36,5 +36,11 @@
   - `no.22-websocket/` WebSocket
   - `no.23-container-escape/` コンテナエスケープ
   - `no.24-rag-pull/` RAG-Pull
-  - `no.26-rsa/` RSA暗号
-  - `no.27-lean-formal-verification/` Leanと形式検証
+  - `no.25-ot-security/` OTセキュリティ
+  - `no.26-vector-db/` ベクトルデータベース
+  - `no.27-rag-retrieval-tuning/` RAGの検索精度を上げる工夫
+  - `no.28-tlp/` TLPタグ（Traffic Light Protocol）
+  - `no.29-ot-ids-mirroring-port/` OT-IDSのミラーリングポート（SPAN・TAP）
+  - `no.30-ip-address-cidr/` IPアドレスとCIDR表記
+  - `no.31-rsa/` RSA暗号
+  - `no.32-lean-formal-verification/` Leanと形式検証
