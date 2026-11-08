@@ -1,0 +1,14 @@
+{
+  "name": "paper-translate-mcp",
+  "version": "0.1.0",
+  "description": "英語論文の翻訳を手伝う MCP サーバ（記事用の最小構成）",
+  "type": "module",
+  "bin": { "paper-translate-mcp": "index.js" },
+  "scripts": { "test": "node test-client.mjs" },
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "unpdf": "1.9.0",
+    "zod": "4.6.7"
+  }
+}
