@@ -44,3 +44,21 @@
   - `no.30-ip-address-cidr/` IPアドレスとCIDR表記
   - `no.31-rsa/` RSA暗号
   - `no.32-lean-formal-verification/` Leanと形式検証
+  - `no.33-pop-smtp/` POPとSMTP
+  - `no.34-tcp-udp/` TCPとUDPの仕組みと実例
+  - `no.35-java-jvm-portability/` JavaはなぜOSに依存せずに動作させることができるのか
+  - `no.36-c-java-compile/` C言語とJavaのコンパイル方法の違い
+  - `no.37-pointer-type-conversion/` メモリのポインタと型変換
+  - `no.38-zap-baseline-scan/` ベースラインスキャン（ZAP×GitHub Actions）
+  - `no.39-nmap/` Nmapの機能とできること
+  - `no.40-nuclei/` Nucleiの機能とできること
+  - `no.41-subfinder/` subfinderの機能とできること
+  - `no.42-burp-suite/` Burp Suiteの全体像とCommunity・Professionalの違い
+  - `no.43-burp-proxy/` Burp SuiteのProxy
+  - `no.44-burp-repeater/` Burp SuiteのRepeater
+  - `no.45-burp-intruder/` Burp SuiteのIntruder
+  - `no.46-burp-scanner/` Burp SuiteのScanner
+  - `no.47-burp-collaborator/` Burp SuiteのCollaborator
+  - `no.48-burp-sequencer/` Burp SuiteのSequencer
+  - `no.49-burp-decoder/` Burp SuiteのDecoder
+  - `no.50-burp-comparer/` Burp SuiteのComparer
