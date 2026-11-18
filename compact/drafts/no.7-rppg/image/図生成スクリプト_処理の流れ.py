@@ -11,7 +11,7 @@ NAVY=RGBColor(0x2E,0x5E,0x8E); TEAL=RGBColor(0x1E,0x8A,0x82)
 TXT=RGBColor(0x1F,0x3A,0x5C); GRAY=RGBColor(0x6B,0x72,0x80); SLATE=RGBColor(0x2B,0x3A,0x4A)
 WHITE=RGBColor(0xFF,0xFF,0xFF); LNAVY=RGBColor(0xEE,0xF3,0xF9); LTEAL=RGBColor(0xE8,0xF5,0xF3)
 MGRAY=RGBColor(0x9A,0xA5,0xB4)
-FONT="Noto Sans CJK JP"
+FONT="Times New Roman"; FONT_JA="Hiragino Mincho ProN"  # 図1に合わせて明朝（Nico 2026-11-18）
 
 prs=Presentation(); prs.slide_width=Inches(13.333); prs.slide_height=Inches(7.5)
 s=prs.slides.add_slide(prs.slide_layouts[6])
@@ -27,7 +27,7 @@ def text(shape, lines, size=14, color=TXT, bold=False, align=PP_ALIGN.CENTER):
         r=p.add_run(); r.text=t; f=r.font; f.size=Pt(sz); f.color.rgb=c; f.bold=b; f.name=FONT
         rPr=r._r.get_or_add_rPr(); ea=rPr.find(qn('a:ea'))
         if ea is None: ea=etree.SubElement(rPr,qn('a:ea'))
-        ea.set('typeface',FONT)
+        ea.set('typeface',FONT_JA)
 
 def box(x,y,w,h,fill=WHITE,line=NAVY,lw=1.4,adj=0.16):
     sh=s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,Inches(x),Inches(y),Inches(w),Inches(h))
