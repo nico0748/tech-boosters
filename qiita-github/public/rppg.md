@@ -7,10 +7,10 @@ tags:
   - ヘルスケア
 private: false
 updated_at: ''
-id: null
+id: 3363cbd5bd123d726f45
 organization_url_name: null
 slide: false
-ignorePublish: true
+ignorePublish: false
 ---
 # はじめに
 
