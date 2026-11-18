@@ -6,10 +6,10 @@ tags:
   - 見積もり
 private: false
 updated_at: ''
-id: null
+id: e5780bd4793011ab6382
 organization_url_name: null
 slide: false
-ignorePublish: true
+ignorePublish: false
 ---
 # はじめに
 
