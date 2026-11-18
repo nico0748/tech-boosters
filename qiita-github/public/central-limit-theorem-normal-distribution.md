@@ -4,14 +4,13 @@ tags:
   - 統計
   - 確率
   - 数学
-private: true
+private: false
+updated_at: ''
+id: null
+organization_url_name: null
+slide: false
+ignorePublish: false
 ---
-<!--
-  コンパクト記事 no.11（草稿。公開前にこのコメントは削除）
-  - 裏取り：統計学の教科書（中心極限定理の前提条件の書き方）
-  - 足したいもの：サイコロの平均をとる回数を増やすと分布が正規分布に近づく様子のヒストグラム（Python で作って png に）
--->
-
 # はじめに
 
 「とりあえず正規分布を仮定する」がなぜ許されるのか気になったので、中心極限定理とセットでまとめておきます。
@@ -35,6 +34,8 @@ $$
 | $\mu \pm 2\sigma$ | 約95.4% |
 | $\mu \pm 3\sigma$ | 約99.7% |
 
+![正規分布と標準偏差の範囲](https://raw.githubusercontent.com/nico0748/tech-boosters/20b3638c5c49f412743da4ba4d1f6be34986c4ab/compact/drafts/no.11-central-limit-theorem-normal-distribution/image/01_%E6%AD%A3%E8%A6%8F%E5%88%86%E5%B8%83%E3%81%A8%E6%A8%99%E6%BA%96%E5%81%8F%E5%B7%AE%E3%81%AE%E7%AF%84%E5%9B%B2.png)
+
 平均0、分散1の $N(0, 1)$ を**標準正規分布**と呼びます。
 
 # 中心極限定理
@@ -52,6 +53,14 @@ $$
 
 ポイントは、**もとの分布が正規分布でなくてもよい**ことです。サイコロの目（一様分布）でも、コイン投げ（ベルヌーイ分布）でも、平均をとればつりがね型になります。
 
+![中心極限定理の流れ](https://raw.githubusercontent.com/nico0748/tech-boosters/20b3638c5c49f412743da4ba4d1f6be34986c4ab/compact/drafts/no.11-central-limit-theorem-normal-distribution/image/02_%E4%B8%AD%E5%BF%83%E6%A5%B5%E9%99%90%E5%AE%9A%E7%90%86%E3%81%AE%E6%B5%81%E3%82%8C.png)
+
+左は指数分布という、つりがね型とはほど遠い分布です。ここから30個ずつ取り出して平均を計算する、を1万回くり返すと、標本平均の分布は右のようにつりがね型になります。
+
+![サイコロの目の平均の分布](https://raw.githubusercontent.com/nico0748/tech-boosters/20b3638c5c49f412743da4ba4d1f6be34986c4ab/compact/drafts/no.11-central-limit-theorem-normal-distribution/image/03_%E3%82%B5%E3%82%A4%E3%82%B3%E3%83%AD%E3%81%AE%E7%9B%AE%E3%81%AE%E5%B9%B3%E5%9D%87%E3%81%AE%E5%88%86%E5%B8%83.png)
+
+サイコロの目は1〜6が同じ確率で出る一様分布ですが、n個の目の平均をとると、n = 2 で山型、n = 5 でほぼつりがね型になり、n = 30 では平均3.5のまわりに細く集まります。
+
 # 大数の法則との違い
 
 | | 大数の法則 | 中心極限定理 |
@@ -67,9 +76,8 @@ $$
 
 # まとめ
 
-「平均をとれば、だいたい正規分布になる」から、統計のいろんな手法が正規分布を前提にできるのよ。
-もっと直感的な説明があれば、有識者の方教えて欲しいです！
+「平均をとれば、だいたい正規分布になる」から、統計のいろんな手法が正規分布を前提にできます。
 
 # 参考
 
-- （統計学の教科書を追記）
+- 東京大学教養学部統計学教室 編『統計学入門』東京大学出版会, 1991

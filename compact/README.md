@@ -22,7 +22,7 @@
   - `no.8-dns-records/` DNSとレコード
   - `no.9-agent-api-vs-mcp/` AIエージェントのAPIとMCPの違い
   - `no.10-fermi-estimation-done/` フェルミ推定
-  - `no.11-central-limit-theorem-normal-distribution/` 中心極限定理と正規分布
+  - `no.11-central-limit-theorem-normal-distribution-done/` 中心極限定理と正規分布
   - `no.12-cors/` CORS
   - `no.13-rag/` RAG
   - `no.14-framework-library-package/` フレームワーク・ライブラリ・パッケージの違い

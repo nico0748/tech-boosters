@@ -32,10 +32,12 @@ ORANGE = "#E8710A"
 TEXT = "#1F3A5C"
 GRAY = "#6B7280"
 AXIS = "#9AA3AF"
-FONT = "Hiragino Sans"
+FONT = "Hiragino Mincho ProN"  # 明朝に統一（Nico 2026-11-18）
+FONT_EN = "Times New Roman"
 
 plt.rcParams["mathtext.fontset"] = "cm"
-plt.rcParams["font.family"] = "DejaVu Sans"
+plt.rcParams["font.family"] = "serif"
+plt.rcParams["font.serif"] = ["Times New Roman", "Liberation Serif", "DejaVu Serif"]
 
 SW, SH = 13.333, 7.5
 _count = [0]
@@ -118,14 +120,14 @@ def text(s, x, y, w, h, t, size=16, color=TEXT, bold=False, align="center", anch
         r = para.add_run()
         r.text = ln
         f = r.font
-        f.size, f.bold, f.name = Pt(size), bold, FONT
+        f.size, f.bold, f.name = Pt(size), bold, FONT_EN
         f.color.rgb = rgb(color)
         rPr = r._r.get_or_add_rPr()
         for tag in ("a:latin", "a:ea", "a:cs"):
             el = rPr.find(qn(tag))
             if el is None:
                 el = etree.SubElement(rPr, qn(tag))
-            el.set("typeface", FONT)
+            el.set("typeface", FONT if tag == "a:ea" else FONT_EN)
     return tb
 
 
