@@ -10,7 +10,7 @@ private: true
 <!--
   コンパクト記事 no.12（草稿。公開前にこのコメントは削除）
   - 裏取り：Fetch Standard（WHATWG）、MDN の CORS のページ
-  - 図1〜3：image/図生成スクリプト.js（2026-11-21 明朝に変更）
+  - 図1〜3：image/図生成スクリプト.js（2026-11-21 zukai-diagrams のフォントに変更）
   - 関連：deep-dive no.1 XSS（同一オリジンポリシーの話）
 -->
 
