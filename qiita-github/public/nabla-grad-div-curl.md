@@ -151,7 +151,7 @@ $`x`$ と $`y`$ を定数とみなします。
 - 例：山の標高を $`f`$ とすると、$`\nabla f`$ はいちばん急な登り坂の向きを指す
 - 機械学習の勾配降下法は、損失関数の勾配と逆向き（$`-\nabla L`$）にパラメータを動かす
 
-![勾配による変化](https://raw.githubusercontent.com/nico0748/tech-boosters/35979ffbff508a1518eaf3bb41eff40cba1b843b/compact/drafts/no.3-nabla-grad-div-curl/image/01_%E5%8B%BE%E9%85%8D%E3%81%AB%E3%82%88%E3%82%8B%E5%A4%89%E5%8C%96.png)
+![勾配による変化](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.3-nabla-grad-div-curl-done/image/01_%E5%8B%BE%E9%85%8D%E3%81%AB%E3%82%88%E3%82%8B%E5%A4%89%E5%8C%96.png)
 *図1：勾配による変化。上はお椀の形 $`f = x^2 + y^2`$、下はまっすぐな坂 $`f = x + y`$ で、左のスカラー場に $`\nabla`$ を掛けると右のベクトル場になる*
 
 上の段がこの例です。下の段はまっすぐな坂 $`f = x + y`$ で、$`\dfrac{\partial f}{\partial x} = 1`$、$`\dfrac{\partial f}{\partial y} = 1`$ なので $`\nabla f = (1, 1)`$ になり、どこでも同じ向き・同じ長さの矢印になります。
@@ -221,7 +221,7 @@ $`xy`$ 平面上で原点のまわりを反時計回りに回る流れです。�
 
 例1と例2を図にすると次のようになります。例1はベクトル場を $`z = 0`$ の面で切って表示しています。
 
-![発散による変化](https://raw.githubusercontent.com/nico0748/tech-boosters/35979ffbff508a1518eaf3bb41eff40cba1b843b/compact/drafts/no.3-nabla-grad-div-curl/image/02_%E7%99%BA%E6%95%A3%E3%81%AB%E3%82%88%E3%82%8B%E5%A4%89%E5%8C%96.png)
+![発散による変化](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.3-nabla-grad-div-curl-done/image/02_%E7%99%BA%E6%95%A3%E3%81%AB%E3%82%88%E3%82%8B%E5%A4%89%E5%8C%96.png)
 *図2：発散による変化。上は外向きに広がる流れ $`F = (x, y, z)`$ で $`\nabla \cdot F = 3`$、下はくるくる回る流れ $`F = (-y, x, 0)`$ で $`\nabla \cdot F = 0`$*
 
 ## 例3：$`F = (x^2 y,\; yz,\; xz^2)`$
@@ -317,7 +317,7 @@ z \text{成分}: \frac{\partial}{\partial x} y - \frac{\partial}{\partial y} x =
 
 例1と例2を図にすると次のようになります。⊙ は紙面の手前向き（$`+z`$ 向き）の矢印を表します。
 
-![回転による変化](https://raw.githubusercontent.com/nico0748/tech-boosters/35979ffbff508a1518eaf3bb41eff40cba1b843b/compact/drafts/no.3-nabla-grad-div-curl/image/03_%E5%9B%9E%E8%BB%A2%E3%81%AB%E3%82%88%E3%82%8B%E5%A4%89%E5%8C%96.png)
+![回転による変化](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.3-nabla-grad-div-curl-done/image/03_%E5%9B%9E%E8%BB%A2%E3%81%AB%E3%82%88%E3%82%8B%E5%A4%89%E5%8C%96.png)
 *図3：回転による変化。上はくるくる回る流れ $`F = (-y, x, 0)`$ で $`\nabla \times F = (0, 0, 2)`$、下は外向きに広がる流れ $`F = (x, y, z)`$ で $`\nabla \times F = (0, 0, 0)`$*
 
 ## 例3：$`F = (x^2 y,\; yz,\; xz^2)`$
@@ -441,7 +441,6 @@ z \text{成分}: \frac{\partial G_y}{\partial x} - \frac{\partial G_x}{\partial 
 $`\nabla`$ を「偏微分のベクトル」と思えば、grad はスカラー倍、div は内積、rot はベクトル積と覚えられます。
 ただし $`\nabla`$ は「右側にあるものを微分する」操作なので、ふつうのベクトルのように順番を入れ替えることはできません。
 偏微分そのものは「ほかの変数を定数とみなして微分する」だけなので、1項ずつ計算すれば手で追えます。
-もっと直感的な説明があれば、有識者の方教えて欲しいです！
 
 # 参考
 

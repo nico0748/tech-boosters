@@ -46,7 +46,7 @@ C2サーバの主な役割は次の4つです。
 3. 端末が命令を実行し、結果やデータを送り返す
 4. 1 に戻る
 
-![C2サーバの通信の流れ](https://raw.githubusercontent.com/nico0748/tech-boosters/46852adc57a25e547e899bb2f3cb36bb1d835a35/compact/drafts/no.5-c2-server/image/01_C2%E3%82%B5%E3%83%BC%E3%83%90%E3%81%AE%E9%80%9A%E4%BF%A1%E3%81%AE%E6%B5%81%E3%82%8C.png)
+![C2サーバの通信の流れ](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.5-c2-server-done/image/01_C2%E3%82%B5%E3%83%BC%E3%83%90%E3%81%AE%E9%80%9A%E4%BF%A1%E3%81%AE%E6%B5%81%E3%82%8C.png)
 *図1：C2サーバの通信の流れ。感染端末のほうから外へ問い合わせ（①）、その応答で命令を受け取り（②）、結果を送り返す（③）。外から社内への接続はファイアウォールで止められるので、この向きになる*
 
 ポイントは、**端末の側から外へ接続しにいく**ことです。

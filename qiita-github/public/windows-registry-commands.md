@@ -74,7 +74,7 @@ HKCU は独立した場所ではなく、`HKU\<ログオン中のユーザーの
 
 ## どのレイヤーで動いているか
 
-![レジストリのアーキテクチャ](https://raw.githubusercontent.com/nico0748/tech-boosters/46852adc57a25e547e899bb2f3cb36bb1d835a35/compact/drafts/no.4-windows-registry-commands/image/01_%E3%83%AC%E3%82%B8%E3%82%B9%E3%83%88%E3%83%AA%E3%81%AE%E3%82%A2%E3%83%BC%E3%82%AD%E3%83%86%E3%82%AF%E3%83%81%E3%83%A3.png)
+![レジストリのアーキテクチャ](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.4-windows-registry-commands-done/image/01_%E3%83%AC%E3%82%B8%E3%82%B9%E3%83%88%E3%83%AA%E3%81%AE%E3%82%A2%E3%83%BC%E3%82%AD%E3%83%86%E3%82%AF%E3%83%81%E3%83%A3.png)
 *図1：レジストリを読み書きするときの流れ*
 
 `regedit` も `reg` も PowerShell も、最後は同じ道を通ります。
@@ -142,7 +142,6 @@ Run キー以外にも、上の「身近なキーの例」にある `RecentDocs`
 レジストリは「Windows の設定の置き場所」ですが、調べる側から見ると「その端末で何が起きたか」が残っている記録でもありました。
 ただし、Windows 11 でも `ProductName` が「Windows 10 Pro」のままだったように、値をそのまま信じると読み違える場所もあります。
 Run キーは調査のときに真っ先に見る場所なので、自分の PC で一度 `reg query` してみると、知らない登録が見つかるかもしれません。
-ほかにも見ておくべきキーがあれば、有識者の方教えて欲しいです！
 
 # 参考
 

@@ -30,7 +30,7 @@ ignorePublish: false
 4. **計算**：桁を間違えないように、10の何乗かの形で計算する
 5. **確認**：別の分け方で計算したり、実際の統計値と比べたりして、桁が合っているかを見る。桁がずれていたら、2の分解からやり直す
 
-![フェルミ推定の手順](https://raw.githubusercontent.com/nico0748/tech-boosters/71f50f33e7b80c94ccc00cb17e972e5825c58909/compact/drafts/no.10-fermi-estimation/image/01_%E3%83%95%E3%82%A7%E3%83%AB%E3%83%9F%E6%8E%A8%E5%AE%9A%E3%81%AE%E6%89%8B%E9%A0%86.png)
+![フェルミ推定の手順](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.10-fermi-estimation-done/image/01_%E3%83%95%E3%82%A7%E3%83%AB%E3%83%9F%E6%8E%A8%E5%AE%9A%E3%81%AE%E6%89%8B%E9%A0%86.png)
 *図1：フェルミ推定の手順。桁がずれたら分解からやり直す（下段は例1の数値）*
 
 # 例1：日本にコンビニは何店舗あるか
