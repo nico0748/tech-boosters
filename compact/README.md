@@ -19,7 +19,7 @@
   - `no.5-c2-server-done/` C&Cサーバ
   - `no.6-force-learning-done/` FORCE学習
   - `no.7-rppg-done/` 非接触型容積脈波測定法（rPPG：remote Photoplethysmography）
-  - `no.8-dns-records/` DNSとレコード
+  - `no.8-dns-records-done/` DNSとレコード
   - `no.9-agent-api-vs-mcp/` AIエージェントのAPIとMCPの違い
   - `no.10-fermi-estimation-done/` フェルミ推定
   - `no.11-central-limit-theorem-normal-distribution-done/` 中心極限定理と正規分布
