@@ -4,16 +4,13 @@ tags:
   - DNS
   - ネットワーク
   - インフラ
-private: true
+private: false
+updated_at: ''
+id: null
+organization_url_name: null
+slide: false
+ignorePublish: false
 ---
-<!--
-  コンパクト記事 no.8（草稿。公開前にこのコメントは削除）
-  - 扱うレコード：A・AAAA・CNAME・PTR・NS・SOA・MX・TXT の8つ（Nico の指定、2026-11-01）
-  - 裏取り：各節に書いた RFC。CNAME の制約は RFC 1034 3.6.2、MX・NS の宛先に CNAME 不可は RFC 2181 10.3、ネガティブキャッシュは RFC 2308、メール配送は RFC 5321 5.1、SPF の DNS 参照10回制限は RFC 7208 4.6.4
-  - 図：image/01〜10_*.pptx/png（zukai-diagrams 準拠。生成スクリプト image/zukai/figs.js、`node figs.js <出力先>` → `./render.sh <出力先>`）
-  - TODO：「確かめるコマンド」に、Nico の Mac で dig を実際に叩いた結果を貼る（作業環境から DNS に出られず未取得）
--->
-
 # はじめに
 
 仕事で DNS を触ることがあったので、この機会に DNS の主要なレコードを振り返ってみました。
@@ -33,7 +30,7 @@ private: true
 4. `example.com` の権威DNSサーバに聞いて、`192.0.2.1` という答えをもらう
 5. キャッシュDNSサーバは端末に答えを返し、その答えを TTL の間だけ覚えておく
 
-![名前解決の流れ](image/01_名前解決の流れ.png)
+![名前解決の流れ](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/01_%E5%90%8D%E5%89%8D%E8%A7%A3%E6%B1%BA%E3%81%AE%E6%B5%81%E3%82%8C.png)
 *図1：名前解決の流れ。端末が聞くのはキャッシュDNSサーバだけで、ルートから順にたどる（2〜7）のはキャッシュDNSサーバの仕事*
 
 このように、上位のサーバが下位の担当サーバを紹介していく仕組みを**委任**と呼びます。
@@ -85,7 +82,7 @@ www.example.com.  A  192.0.2.1
 www.example.com.  A  192.0.2.2
 ```
 
-![Aレコードの仕組み](image/02_Aレコード.png)
+![Aレコードの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/02_A%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89.png)
 *図2：A レコードの仕組み。同じ名前に A を2つ置くと、答えの順番が入れ替わりながら返り、端末ごとに接続先の Web サーバが分かれる*
 
 - 同じ名前に A を複数置くと、答えの順番が入れ替わりながら返り、接続先が分散する（DNS ラウンドロビン）。ただし、止まったサーバを外してくれるわけではない
@@ -102,7 +99,7 @@ www.example.com.  A     192.0.2.1
 www.example.com.  AAAA  2001:db8::1
 ```
 
-![AAAAレコードの仕組み](image/03_AAAAレコード.png)
+![AAAAレコードの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/03_AAAA%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89.png)
 *図3：AAAA レコードの仕組み。IPv6 が使える端末は AAAA と A を両方引き、まず IPv6 で接続を試す。250ms たってもつながらなければ IPv4 でも試し、先につながった方を使う*
 
 - IPv4 と IPv6 の両方が使える端末は、AAAA と A を両方引く。まず IPv6 で接続を試し、少し待って（推奨値 250ms）もつながらなければ IPv4 でも試して、先につながった方を使う（Happy Eyeballs、RFC 8305）
@@ -118,7 +115,7 @@ blog.example.com.   CNAME  example.github.io.
 example.github.io.  A      185.199.108.153
 ```
 
-![CNAMEの仕組み](image/04_CNAME.png)
+![CNAMEの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/04_CNAME.png)
 *図4：CNAME の仕組み。`blog.example.com` を聞くと CNAME が返り、キャッシュDNSサーバが正式な名前 `example.github.io` をたどり直して A を返す*
 
 - 外部サービス（GitHub Pages、CDN など）の IP アドレスが変わっても、こちらの設定を変えずに済む
@@ -137,7 +134,7 @@ IP アドレスを逆順に並べて `in-addr.arpa`（IPv6 は `ip6.arpa`）の�
 mail.example.com.        A    192.0.2.25
 ```
 
-![PTRの仕組み](image/05_PTR.png)
+![PTRの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/05_PTR.png)
 *図5：逆引きの仕組み。`192.0.2.25` は `25.2.0.192.in-addr.arpa` という名前になり、IP アドレスを割り当てた側（プロバイダなど）のゾーンで PTR を引く。メールの受信サーバは、返ってきた名前の A がもとの IP と一致するかも確かめる*
 
 - 逆引きゾーンを管理するのは、ドメインの持ち主ではなく **IP アドレスの割り当て元**（プロバイダやクラウド事業者）。自分のゾーンに書いても効かない
@@ -160,7 +157,7 @@ ns1.example.com.  A   192.0.2.53      ; グルーレコード
 example.com.      NS  ns1.example.com.
 ```
 
-![NSの仕組み](image/06_NS.png)
+![NSの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/06_NS.png)
 *図6：NS による委任。親ゾーンの NS が子ゾーンの担当サーバを紹介する。担当サーバの名前が子ゾーンの中にあるときは、親にグルー（A / AAAA）も置く*
 
 - 担当サーバ `ns1.example.com` が `example.com` の中にあると、「`example.com` を聞くには `ns1.example.com` の IP が要り、それを聞くには `example.com` に聞く必要がある」と堂々巡りになる。そのため、親ゾーンに IP アドレス（**グルーレコード**）も置いておく
@@ -184,7 +181,7 @@ example.com.  SOA  ns1.example.net. hostmaster.example.com. (
 
 `hostmaster.example.com.` は管理者のメールアドレス `hostmaster@example.com` を表します（最初の `.` を `@` に読み替える）。
 
-![SOAとゾーン転送の仕組み](image/07_SOAとゾーン転送.png)
+![SOAとゾーン転送の仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/07_SOA%E3%81%A8%E3%82%BE%E3%83%BC%E3%83%B3%E8%BB%A2%E9%80%81.png)
 *図7：SOA とゾーン転送。プライマリが更新を NOTIFY で知らせ、セカンダリは SOA のシリアル番号を比べて、増えていればゾーンを転送してもらう*
 
 - 権威DNSサーバは、ふつう**プライマリ**（原本を持つ）と**セカンダリ**（コピーを持つ）の複数台で動かす
@@ -208,7 +205,7 @@ mail1.example.com.  A   192.0.2.25
 mail2.example.com.  A   192.0.2.26
 ```
 
-![MXの仕組み](image/08_MX.png)
+![MXの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/08_MX.png)
 *図8：MX の仕組み。送信側のメールサーバは優先度 10 のサーバから試し、つながらなければ優先度 20 のサーバに送る*
 
 `user@example.com` 宛てのメールは、送る側のメールサーバが次の順に処理します。
@@ -229,7 +226,7 @@ mail2.example.com.  A   192.0.2.26
 メールの受け取り先を別のサービスに移すときは、MX の向き先を新しいサービスに変えます。
 ただし、切り替えの前後で、メールが2つの箱に分かれて届くことがあります。
 
-![MXの切り替えと届く箱](image/09_MXの切り替えと届く箱.png)
+![MXの切り替えと届く箱](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/09_MX%E3%81%AE%E5%88%87%E3%82%8A%E6%9B%BF%E3%81%88%E3%81%A8%E5%B1%8A%E3%81%8F%E7%AE%B1.png)
 *図9：MX を切り替える前と後で、メールが届く箱。切り替え前は、社外からのメールは MX が指す旧サーバの箱に、同じクラウドサービスの利用者からのメールはクラウドの箱に届いてしまう。切り替え後は、DNS のゾーンの MX だけを書き換えて、どちらもクラウドの箱に届くようにする*
 
 分かれる理由は2つあります。
@@ -245,7 +242,7 @@ TXT は、任意の文字列を置けるレコードです（RFC 1035）。
 1つの文字列は255バイトまでで、長い値は複数の文字列に分けて書きます。
 自由に書ける分、いろいろな仕組みが「決まった名前に、決まった形式の TXT を置く」というルールで使っています。
 
-![TXTの仕組み](image/10_TXT.png)
+![TXTの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/10_TXT.png)
 *図10：TXT を使った送信ドメイン認証。受信側のメールサーバが、送信元ドメインの SPF・DKIM・DMARC の TXT を引いて、なりすましでないかを確かめる*
 
 | 用途 | 置く名前 | 例 |
@@ -275,35 +272,103 @@ TXT は、任意の文字列を置けるレコードです（RFC 1035）。
 
 # 確かめるコマンド
 
+実際に `dig` で example.com を引いてみました（2026-11-19、macOS の dig 9.10.6）。
+`@8.8.8.8` は「Google の公開 DNS（キャッシュDNSサーバ）に聞く」という指定です。家のルーターの DNS が問い合わせを断ったので、問い合わせ先を指定しています。出力は、答え（ANSWER SECTION）の部分だけに絞っています。
+
+## A レコードを引く
+
 ```sh
-# A レコードを引く
-dig www.example.com A
+dig @8.8.8.8 www.example.com A
+```
 
-# MX レコードを引く
-dig example.com MX
+```
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 35061
+;; ANSWER SECTION:
+www.example.com.	300	IN	A	104.20.23.154
+www.example.com.	300	IN	A	172.66.147.243
+```
 
-# 答えだけを表示する
-dig +short example.com TXT
+`status: NOERROR` は「名前が見つかって答えが返った」という意味です。A レコードが2つ返っていて、`300` は TTL（キャッシュしてよい秒数）です。
 
-# 逆引きする
-dig -x 192.0.2.1
+## MX レコードを引く
 
-# SOA を引く（シリアル番号を確かめる）
-dig example.com SOA
+```sh
+dig @8.8.8.8 example.com MX
+```
 
-# NS を引く
-dig example.com NS
+```
+;; ANSWER SECTION:
+example.com.		56	IN	MX	0 .
+```
 
-# ルートから権威サーバまで順にたどる様子を見る（図1の2〜7）
+`0 .` は、MX の節で触れた Null MX です。example.com は「メールを受け取らないドメイン」だと宣言しています。
+
+## TXT レコードを答えだけ表示する
+
+```sh
+dig @8.8.8.8 +short example.com TXT
+```
+
+```
+"_k2n1y4vw3qtb4skdx9e7dxt97qrmmq9"
+"v=spf1 -all"
+```
+
+`+short` を付けると、答えの値だけが表示されます。`v=spf1 -all` は「このドメインからメールを送るサーバは1台もない」という SPF の宣言で、Null MX とセットで「メールに使わないドメイン」を表しています。
+
+## 逆引きする
+
+```sh
+dig @8.8.8.8 -x 8.8.8.8
+```
+
+```
+;; ANSWER SECTION:
+8.8.8.8.in-addr.arpa.	16197	IN	PTR	dns.google.
+```
+
+`-x` を付けると、IP アドレスを `8.8.8.8.in-addr.arpa.` の形に直して PTR レコードを引いてくれます。8.8.8.8 の名前は `dns.google` でした。
+
+## SOA を引く
+
+```sh
+dig @8.8.8.8 example.com SOA
+```
+
+```
+;; ANSWER SECTION:
+example.com.		1136	IN	SOA	elliott.ns.cloudflare.com. dns.cloudflare.com. 2420077714 10000 2400 604800 1800
+```
+
+左から、プライマリの権威DNSサーバ、管理者の連絡先（`dns.cloudflare.com.` は `dns@cloudflare.com` の意味）、シリアル番号、リフレッシュ、リトライ、有効期限、ネガティブキャッシュの TTL です。シリアル番号は日付の形でなくてもよく、増えてさえいればセカンダリは更新に気づけます。
+
+## NS を引く
+
+```sh
+dig @8.8.8.8 example.com NS
+```
+
+```
+;; ANSWER SECTION:
+example.com.		21600	IN	NS	elliott.ns.cloudflare.com.
+example.com.		21600	IN	NS	hera.ns.cloudflare.com.
+```
+
+example.com のゾーンは、Cloudflare の2台の権威DNSサーバに委任されていることが分かります。
+
+## ルートから順にたどる
+
+```sh
 dig +trace www.example.com
 ```
+
+`+trace` を付けると、ルート → `.com` → `example.com` の権威DNSサーバと順に問い合わせる様子（図1の2〜7）が見られます。今回の回線では途中で止まってしまい、結果は取れませんでした。
 
 # まとめ
 
 8つのレコードを並べてみると、A・AAAA・CNAME・PTR は「名前とアドレスをつなぐ」、NS・SOA は「誰がそのゾーンを持つか」、MX・TXT は「その上にメールの仕組みを載せる」と、役割で3つに分かれます。
 設定で迷うのはたいてい CNAME の制約とキャッシュで、どちらも「答えは分散して置かれ、しばらく覚えられている」という DNS の基本から来ています。
 ここで扱わなかった SRV・CAA・HTTPS や DNSSEC のレコードも、この基本の上に載っています。
-よくあるハマりどころがほかにもあれば、有識者の方教えて欲しいです！
 
 # 参考
 
