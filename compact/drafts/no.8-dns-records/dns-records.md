@@ -11,7 +11,7 @@ private: true
   - 扱うレコード：A・AAAA・CNAME・PTR・NS・SOA・MX・TXT の8つ（Nico の指定、2026-11-01）
   - 裏取り：各節に書いた RFC。CNAME の制約は RFC 1034 3.6.2、MX・NS の宛先に CNAME 不可は RFC 2181 10.3、ネガティブキャッシュは RFC 2308、メール配送は RFC 5321 5.1、SPF の DNS 参照10回制限は RFC 7208 4.6.4
   - 図：image/01〜10_*.pptx/png（zukai-diagrams 準拠。生成スクリプト image/zukai/figs.js、`node figs.js <出力先>` → `./render.sh <出力先>`）
-  - TODO：「確かめるコマンド」に、Nico の Mac で dig を実際に叩いた結果を貼る（作業環境から DNS に出られず未取得）
+  - dig の実行結果：Nico の Mac で 2026-11-19 に取得（@8.8.8.8 指定。+trace は回線の都合で取れず）
 -->
 
 # はじめに
@@ -275,35 +275,103 @@ TXT は、任意の文字列を置けるレコードです（RFC 1035）。
 
 # 確かめるコマンド
 
+実際に `dig` で example.com を引いてみました（2026-11-19、macOS の dig 9.10.6）。
+`@8.8.8.8` は「Google の公開 DNS（キャッシュDNSサーバ）に聞く」という指定です。家のルーターの DNS が問い合わせを断ったので、問い合わせ先を指定しています。出力は、答え（ANSWER SECTION）の部分だけに絞っています。
+
+## A レコードを引く
+
 ```sh
-# A レコードを引く
-dig www.example.com A
+dig @8.8.8.8 www.example.com A
+```
 
-# MX レコードを引く
-dig example.com MX
+```
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 35061
+;; ANSWER SECTION:
+www.example.com.	300	IN	A	104.20.23.154
+www.example.com.	300	IN	A	172.66.147.243
+```
 
-# 答えだけを表示する
-dig +short example.com TXT
+`status: NOERROR` は「名前が見つかって答えが返った」という意味です。A レコードが2つ返っていて、`300` は TTL（キャッシュしてよい秒数）です。
 
-# 逆引きする
-dig -x 192.0.2.1
+## MX レコードを引く
 
-# SOA を引く（シリアル番号を確かめる）
-dig example.com SOA
+```sh
+dig @8.8.8.8 example.com MX
+```
 
-# NS を引く
-dig example.com NS
+```
+;; ANSWER SECTION:
+example.com.		56	IN	MX	0 .
+```
 
-# ルートから権威サーバまで順にたどる様子を見る（図1の2〜7）
+`0 .` は、MX の節で触れた Null MX です。example.com は「メールを受け取らないドメイン」だと宣言しています。
+
+## TXT レコードを答えだけ表示する
+
+```sh
+dig @8.8.8.8 +short example.com TXT
+```
+
+```
+"_k2n1y4vw3qtb4skdx9e7dxt97qrmmq9"
+"v=spf1 -all"
+```
+
+`+short` を付けると、答えの値だけが表示されます。`v=spf1 -all` は「このドメインからメールを送るサーバは1台もない」という SPF の宣言で、Null MX とセットで「メールに使わないドメイン」を表しています。
+
+## 逆引きする
+
+```sh
+dig @8.8.8.8 -x 8.8.8.8
+```
+
+```
+;; ANSWER SECTION:
+8.8.8.8.in-addr.arpa.	16197	IN	PTR	dns.google.
+```
+
+`-x` を付けると、IP アドレスを `8.8.8.8.in-addr.arpa.` の形に直して PTR レコードを引いてくれます。8.8.8.8 の名前は `dns.google` でした。
+
+## SOA を引く
+
+```sh
+dig @8.8.8.8 example.com SOA
+```
+
+```
+;; ANSWER SECTION:
+example.com.		1136	IN	SOA	elliott.ns.cloudflare.com. dns.cloudflare.com. 2420077714 10000 2400 604800 1800
+```
+
+左から、プライマリの権威DNSサーバ、管理者の連絡先（`dns.cloudflare.com.` は `dns@cloudflare.com` の意味）、シリアル番号、リフレッシュ、リトライ、有効期限、ネガティブキャッシュの TTL です。シリアル番号は日付の形でなくてもよく、増えてさえいればセカンダリは更新に気づけます。
+
+## NS を引く
+
+```sh
+dig @8.8.8.8 example.com NS
+```
+
+```
+;; ANSWER SECTION:
+example.com.		21600	IN	NS	elliott.ns.cloudflare.com.
+example.com.		21600	IN	NS	hera.ns.cloudflare.com.
+```
+
+example.com のゾーンは、Cloudflare の2台の権威DNSサーバに委任されていることが分かります。
+
+## ルートから順にたどる
+
+```sh
 dig +trace www.example.com
 ```
+
+`+trace` を付けると、ルート → `.com` → `example.com` の権威DNSサーバと順に問い合わせる様子（図1の2〜7）が見られます。今回の回線では途中で止まってしまい、結果は取れませんでした。
 
 # まとめ
 
 8つのレコードを並べてみると、A・AAAA・CNAME・PTR は「名前とアドレスをつなぐ」、NS・SOA は「誰がそのゾーンを持つか」、MX・TXT は「その上にメールの仕組みを載せる」と、役割で3つに分かれます。
 設定で迷うのはたいてい CNAME の制約とキャッシュで、どちらも「答えは分散して置かれ、しばらく覚えられている」という DNS の基本から来ています。
 ここで扱わなかった SRV・CAA・HTTPS や DNSSEC のレコードも、この基本の上に載っています。
-よくあるハマりどころがほかにもあれば、有識者の方教えて欲しいです！
 
 # 参考
 
