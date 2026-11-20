@@ -75,8 +75,6 @@ Collaborator のペイロードを送るのは、自分が管理するアプリ�
 - ブラインド SSRF・ブラインド SQL インジェクション・ブラインド XSS など、レスポンスに出ない問題に効く
 - Professional だけ。公開サーバーが使えなければ自前のサーバーも立てられる
 
-ほかに Collaborator の面白い使い方があれば、有識者の方教えて欲しいです！
-
 # 参考
 
 - [Burp Collaborator](https://portswigger.net/burp/documentation/desktop/tools/collaborator)

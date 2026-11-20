@@ -277,8 +277,6 @@ nmap --script-help http-title
 - NSE は、600 本以上の Lua スクリプトで、情報収集から脆弱性の確認までを足せる。ただし `intrusive` などのカテゴリは対象に影響しうるので、自分の検証環境だけで使う
 - どの機能も、許可のない相手には使わない。練習は `scanme.nmap.org`（負荷をかけない範囲で）か、自分の環境で
 
-もっと効率のいいスキャンのオプションの組み合わせや、結果の読み方のコツがあれば、有識者の方教えて欲しいです！
-
 # 参考
 
 - [Nmap Reference Guide（man ページ）](https://nmap.org/book/man.html)

@@ -29,7 +29,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ICON_SVG = os.path.join(HERE, "icons", "svg")
 ICON_PNG = os.path.join(HERE, "icons")
 
-FONT = "Noto Sans CJK JP"
+FONT = "Hiragino Sans"
 MONO = "Menlo"
 
 # 文字サイズ（pt）

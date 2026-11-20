@@ -501,8 +501,6 @@ NumPy では1次元配列に縦・横の区別がないので、式の形をそ�
 
 内積とベクトル積は、ベクトル解析の発散（div）と回転（rot）にもそのまま出てきます。そちらは「[ナブラ演算子と勾配・発散・回転を簡単にまとめる](https://qiita.com/nico0748/items/6c7ca1cb5787931e27a3)」にまとめました。
 
-途中式でもっとわかりやすい導き方があれば、有識者の方教えて欲しいです！
-
 # 参考
 
 - [numpy.outer — NumPy Manual](https://numpy.org/doc/stable/reference/generated/numpy.outer.html)

@@ -6,7 +6,7 @@ const React = require("react"), RDS = require("react-dom/server"), sharp = requi
 const OUT = process.argv[2] || ".";
 const MATH = path.join(__dirname, "math");
 const MS = JSON.parse(fs.readFileSync(path.join(MATH, "sizes.json"), "utf8"));
-const FONT = {ja: "Hiragino Sans", en: "Helvetica Neue", mono: "Menlo"};
+const FONT = {ja: "Hiragino Sans", en: "Gibson", mono: "Menlo"};
 const C = {navy: "1F2A44", gray: "5F6368", line: "555555", white: "FFFFFF", border: "D5D9E0", edge: "B4BAC4",
   teal: "138A7E", tealBg: "EAF6F4", blue: "2F6FDB", blueBg: "EEF4FD", orange: "E07B1A", orangeBg: "FFF4E6",
   purple: "7C4DDB", purpleBg: "F5F1FD", red: "C62828", redBg: "FDECEC", slate: "3D4651", magenta: "B83C78",

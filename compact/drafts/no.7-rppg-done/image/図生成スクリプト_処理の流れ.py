@@ -11,7 +11,7 @@ NAVY=RGBColor(0x2E,0x5E,0x8E); TEAL=RGBColor(0x1E,0x8A,0x82)
 TXT=RGBColor(0x1F,0x3A,0x5C); GRAY=RGBColor(0x6B,0x72,0x80); SLATE=RGBColor(0x2B,0x3A,0x4A)
 WHITE=RGBColor(0xFF,0xFF,0xFF); LNAVY=RGBColor(0xEE,0xF3,0xF9); LTEAL=RGBColor(0xE8,0xF5,0xF3)
 MGRAY=RGBColor(0x9A,0xA5,0xB4)
-FONT="Times New Roman"; FONT_JA="Hiragino Mincho ProN"  # 図1に合わせて明朝（Nico 2026-11-18）
+FONT="Gibson"; FONT_JA="Hiragino Sans"  # 図1に合わせて明朝（Nico 2026-11-18）
 
 prs=Presentation(); prs.slide_width=Inches(13.333); prs.slide_height=Inches(7.5)
 s=prs.slides.add_slide(prs.slide_layouts[6])

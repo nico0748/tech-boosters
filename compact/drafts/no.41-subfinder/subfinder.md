@@ -207,8 +207,6 @@ Go のライブラリとしても使えるので、自前のツールに組み�
 - 集めた名前は正規化・検証・フィルタ・重複排除されて、テキストや JSON Lines で出る。`-active` を付けると、DNS で解決できてワイルドカードでないものだけに絞れる
 - 標準入出力に対応していて、httpx や Nuclei にパイプでつなげる。ただし httpx から先は対象と通信するので、許可された範囲に限る
 
-もっといい情報源の組み合わせや、無料枠で効くキーの入れ方があれば、有識者の方教えて欲しいです！
-
 # 参考
 
 - [projectdiscovery/subfinder（GitHub）](https://github.com/projectdiscovery/subfinder)

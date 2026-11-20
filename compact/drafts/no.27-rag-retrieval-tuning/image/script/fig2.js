@@ -40,7 +40,7 @@ const M = (t, o = {}) => ({text: t, options: {fontFace: "Menlo", ...o}});
     [c("B", {bold: true}), c("—", {color: C.muted}), c("1"), c("1/61", {fontFace: "Menlo"}), c("0.0164", {fontFace: "Menlo"}), c("3", {bold: true})],
     [c("D", {bold: true}), c("3"), c("—", {color: C.muted}), c("1/63", {fontFace: "Menlo"}), c("0.0159", {fontFace: "Menlo"}), c("4", {bold: true})],
   ];
-  s.addTable(rows, {x: tx, y: 2.2, w: tw, colW: [0.8, 1.15, 1.3, 1.8, 0.95, 1.0], rowH: 0.55, fontFace: "Helvetica Neue",
+  s.addTable(rows, {x: tx, y: 2.2, w: tw, colW: [0.8, 1.15, 1.3, 1.8, 0.95, 1.0], rowH: 0.55, fontFace: "Gibson",
     border: {type: "solid", color: C.grid, pt: 0.75}, valign: "middle", margin: 0.04});
   arrow(s, [e1, [4.75, e1[1]], [4.75, 3.6], [tx, 3.6]], "順位のみ使用", {seg: 2, w: 1.3});
   arrow(s, [e2, [4.75, e2[1]], [4.75, 3.6]], null, {noHead: true});

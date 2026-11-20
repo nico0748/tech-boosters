@@ -3,7 +3,7 @@ const pptxgen = require("pptxgenjs"), JSZip = require("jszip"), fs = require("fs
 const React = require("react"), RDS = require("react-dom/server");
 const sharp = require("sharp"), md = require("react-icons/md"), tb = require("react-icons/tb");
 
-const FONT = {ja: "Hiragino Sans", en: "Helvetica Neue"};
+const FONT = {ja: "Hiragino Sans", en: "Gibson"};
 const FS = {lane: 18, laneSub: 14, title: 16, desc: 14, arrow: 14, badge: 13, legend: 14};
 const C = {navy: "1F2A44", text: "222222", muted: "5F6368", arrow: "3C4043", grid: "D5DAE1", white: "FFFFFF",
   blue: "2F5BD3", blueBg: "EEF3FD", red: "C0392B", redBg: "FCEEEC", orange: "E37400", orangeBg: "FFF4E5",

@@ -22,7 +22,7 @@ async function rules(s, x, y, w, ic, title, kind, head, rows, cidrCol, cw) {
   s.addImage({data: await icon(ic, TEAL), x: x + 0.1, y: y + 0.07, w: 0.28, h: 0.28});
   T(s, [{text: title, options: {bold: true, fontSize: 14}}, {text: "  " + kind, options: {fontSize: 13, color: C.muted}}],
     {x: x + 0.45, y, w: w - 0.5, h: 0.42, color: TEAL, valign: "middle"});
-  s.addTable([head.map(hd), ...tr], {x, y: y + 0.48, w, colW: cw, rowH: 0.34, fontFace: "Helvetica Neue", fontSize: 13,
+  s.addTable([head.map(hd), ...tr], {x, y: y + 0.48, w, colW: cw, rowH: 0.34, fontFace: "Gibson", fontSize: 13,
     border: {type: "solid", pt: 0.75, color: C.grid}, margin: [0, 0.08, 0, 0.08], valign: "middle", fill: {color: C.white}});
 }
 

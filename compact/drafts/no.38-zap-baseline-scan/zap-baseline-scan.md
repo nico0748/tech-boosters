@@ -201,8 +201,6 @@ Baseline Scan は、アラートの結果に応じて終了コードを返しま
 - GitHub Actions では `zaproxy/action-baseline` を使う。`fail_action: true` は WARN でも CI を落とすので、`-I` と rules.tsv の `FAIL` を組み合わせて「守る線」を決める
 - SQL インジェクションや XSS のような穴は見つけられないので、アクティブなフルスキャン（自分のステージング環境に対して）と組み合わせる
 
-もっといい rules.tsv の育て方や、ログインが必要な画面の診断のコツがあれば、有識者の方教えて欲しいです！
-
 # 参考
 
 - [ZAP - Baseline Scan](https://www.zaproxy.org/docs/docker/baseline-scan/)

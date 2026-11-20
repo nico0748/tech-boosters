@@ -1,6 +1,5 @@
 // 図1 rPPGの全体像（zukai-diagrams の規約＋元の色分け：被験者=ネイビー、測定系=ティール）
 const Z = require("./zukai.js"), md = require("react-icons/md");
-Z.FONT.ja = "Hiragino Mincho ProN"; Z.FONT.en = "Times New Roman";   // Nico指定の明朝体（2026-11-02）
 Z.ICON.light = md.MdWbSunny; Z.ICON.hr = md.MdMonitorHeart;
 
 const NAVY = "2E5E8E", LNAVY = "EEF3F9", TEAL = "1E8A82", LTEAL = "E8F5F3", SLATE = "2B3A4A",

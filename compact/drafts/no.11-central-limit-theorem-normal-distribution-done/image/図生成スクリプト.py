@@ -32,12 +32,12 @@ ORANGE = "#E8710A"
 TEXT = "#1F3A5C"
 GRAY = "#6B7280"
 AXIS = "#9AA3AF"
-FONT = "Hiragino Mincho ProN"  # 明朝に統一（Nico 2026-11-18）
-FONT_EN = "Times New Roman"
+FONT = "Hiragino Sans"  # zukai-diagrams の読ませる文字（和文）に統一（Nico 2026-11-20）
+FONT_EN = "Gibson"     # 同・欧文
 
 plt.rcParams["mathtext.fontset"] = "cm"
-plt.rcParams["font.family"] = "serif"
-plt.rcParams["font.serif"] = ["Times New Roman", "Liberation Serif", "DejaVu Serif"]
+plt.rcParams["font.family"] = "sans-serif"  # 数式以外はゴシック（Gibson の代わりが無ければ Liberation Sans）
+plt.rcParams["font.sans-serif"] = ["Gibson", "Gibson", "Liberation Sans", "DejaVu Sans"]
 
 SW, SH = 13.333, 7.5
 _count = [0]

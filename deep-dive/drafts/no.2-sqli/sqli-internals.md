@@ -373,8 +373,6 @@ SQLiは、値が字句解析・構文解析を通ってしまうことで、**DB
 
 次回も、別の脆弱性で「どの層で何がすり替わっているのか」を深ぼっていく予定です。
 
-エミュレートされたprepareの実際の挙動や、他のDBでの違いに詳しい方がいたら、有識者の方ぜひ教えて欲しいです！
-
 # 参考
 
 - [The SQLite Bytecode Engine](https://www.sqlite.org/opcode.html)

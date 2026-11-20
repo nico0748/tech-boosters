@@ -21,7 +21,7 @@ TEAL_BG = RGBColor(0xE8, 0xF5, 0xF3)
 TEAL_MID = RGBColor(0xC9, 0xE8, 0xE4)
 GRAY_BG = RGBColor(0xF3, 0xF4, 0xF6)
 GRAY_MID = RGBColor(0xE5, 0xE7, 0xEB)
-FONT = "Noto Sans CJK JP"
+FONT = "Hiragino Sans"
 
 prs = Presentation()
 prs.slide_width = Inches(13.333)

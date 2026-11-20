@@ -1,7 +1,6 @@
 // 図1 フェルミ推定の手順（UMLアクティビティ図、zukai-diagrams の記事用台紙 10×5.625in）
 // 実行: node gen.js [出力.pptx]  → PNG は render.sh
 const Z = require("./zukai.js"), C = Z.C;
-Z.FONT.ja = "Hiragino Mincho ProN"; Z.FONT.en = "Times New Roman";   // Nico指定の明朝体（2026-11-18）
 const OUT = process.argv[2] || "01_フェルミ推定の手順.pptx";
 const F = {title: 16, sub: 14, guard: 14, ex: 14, head: 15};
 const BW = 1.35, BH = 1.0, Y = 0.55, MY = Y + BH / 2, XS = [0.65, 2.55, 4.16, 5.77, 7.38];

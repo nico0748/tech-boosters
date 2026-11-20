@@ -35,6 +35,6 @@ const RED = "C62828", RED_BG = "FDECEA", GRAY = "9AA0A6";
   s.addText([{text: "集約できない例：192.168.1.0/24〜192.168.4.0/24", options: {bold: true, breakLine: true}},
     {text: "/22 の境界とずれ、/24・/23・/24 の3つ止まり"}],
     {shape: "roundRect", rectRadius: 0.06, x: sx(1) + 0.03, y: yb + 0.24, w: 4 * SW - 0.06, h: 0.64, fill: {color: RED_BG}, line: {color: RED, width: 1.25},
-      fontFace: "Helvetica Neue", fontSize: 13.5, color: RED, align: "center", valign: "middle", margin: 0.04});
+      fontFace: "Gibson", fontSize: 13.5, color: RED, align: "center", valign: "middle", margin: 0.04});
   await save(p, out);
 })();
