@@ -22,7 +22,7 @@ ignorePublish: false
 
 いちばんの特徴は、既存の心拍計と違って**肌に何も触れずに（非接触で）測れる**ことです。
 
-![rPPGの全体像](https://raw.githubusercontent.com/nico0748/tech-boosters/b3ffbb475a162e9c46c00560ec01e3cad1c2c185/compact/drafts/no.7-rppg/image/01_rPPG%E3%81%AE%E5%85%A8%E4%BD%93%E5%83%8F.png)
+![rPPGの全体像](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.7-rppg-done/image/01_rPPG%E3%81%AE%E5%85%A8%E4%BD%93%E5%83%8F.png)
 
 心臓の拍動で血液の量が変わり、おでこの肌で反射する光の色がわずかに変わります。それを離れたところのカメラで撮って、PC で心拍数に直します。
 
@@ -54,7 +54,7 @@ ignorePublish: false
 5. 心拍の範囲（だいたい 0.7〜4 Hz、つまり 42〜240 bpm）だけを通すフィルタをかける
 6. FFT などで、いちばん強い周波数を見つけて心拍数にする
 
-![rPPGの処理の流れ](https://raw.githubusercontent.com/nico0748/tech-boosters/b3ffbb475a162e9c46c00560ec01e3cad1c2c185/compact/drafts/no.7-rppg/image/02_rPPG%E3%81%AE%E5%87%A6%E7%90%86%E3%81%AE%E6%B5%81%E3%82%8C.png)
+![rPPGの処理の流れ](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.7-rppg-done/image/02_rPPG%E3%81%AE%E5%87%A6%E7%90%86%E3%81%AE%E6%B5%81%E3%82%8C.png)
 
 上の段（①〜③）で動画を R・G・B の3本の時系列信号にして、下の段（④〜⑥）でその信号から心拍数を出します。
 

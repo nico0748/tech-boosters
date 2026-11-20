@@ -22,7 +22,7 @@ TEAL = "#1E8A82"
 TEXT = "#1F3A5C"
 GRAY = "#6B7280"
 LIGHT = {NAVY: "#EEF3F9", TEAL: "#E9F5F3"}
-FONT = "Noto Sans CJK JP"
+FONT = "Hiragino Sans"
 
 plt.rcParams["mathtext.fontset"] = "cm"
 plt.rcParams["font.family"] = FONT

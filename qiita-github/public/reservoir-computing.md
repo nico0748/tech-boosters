@@ -54,7 +54,7 @@ RNN の学習には、時間方向に展開したネットワークで誤差を�
 
 リザバーコンピューティングは、次の3つの層でできています。
 
-![リザバーのアーキテクチャ](https://raw.githubusercontent.com/nico0748/tech-boosters/df92e3e6a3b42afb27de26356744d06d2dc4d2c0/compact/drafts/no.1-reservoir-computing/image/01_%E3%83%AA%E3%82%B6%E3%83%90%E3%83%BC%E3%81%AE%E3%82%A2%E3%83%BC%E3%82%AD%E3%83%86%E3%82%AF%E3%83%81%E3%83%A3.png)
+![リザバーのアーキテクチャ](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.1-reservoir-computing-done/image/01_%E3%83%AA%E3%82%B6%E3%83%90%E3%83%BC%E3%81%AE%E3%82%A2%E3%83%BC%E3%82%AD%E3%83%86%E3%82%AF%E3%83%81%E3%83%A3.png)
 *図1：リザバーコンピューティングの構成。紺の結合（$`W_{in}`$、$`W`$）はランダムに作って固定し、緑の読み出し $`W_{out}`$ だけをリッジ回帰で学習する。赤の破線の出力フィードバックは任意*
 
 | 層 | 中身 | 学習するか |
@@ -102,7 +102,7 @@ $`\beta`$ は過学習を抑えるための正則化の強さです。
 リザバーの読み出しを学習するやり方は、リッジ回帰だけではありません。
 代表的なのが、Sussillo と Abbott が 2009 年に提案した **FORCE学習**です。
 
-![FORCE学習のアーキテクチャ](https://raw.githubusercontent.com/nico0748/tech-boosters/df92e3e6a3b42afb27de26356744d06d2dc4d2c0/compact/drafts/no.1-reservoir-computing/image/02_FORCE%E5%AD%A6%E7%BF%92%E3%81%AE%E3%82%A2%E3%83%BC%E3%82%AD%E3%83%86%E3%82%AF%E3%83%81%E3%83%A3.png)
+![FORCE学習のアーキテクチャ](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.1-reservoir-computing-done/image/02_FORCE%E5%AD%A6%E7%BF%92%E3%81%AE%E3%82%A2%E3%83%BC%E3%82%AD%E3%83%86%E3%82%AF%E3%83%81%E3%83%A3.png)
 *図2：FORCE学習の構成。出力 $`z`$ をフィードバック $`w_f`$ でリザバーに戻しながら、目標 $`f(t)`$ との誤差 $`e(t)`$ を使って、読み出し $`w`$ を RLS で毎ステップ直す*
 
 | | ふつうの ESN | FORCE学習 |
@@ -133,7 +133,6 @@ FORCE学習の詳しい仕組みは、「[FORCE学習を簡単にまとめる](h
 リザバーコンピューティングの肝は、「全部を学習しないで、最後だけ学習する」という割り切りでした。
 ただし、学習しない分、リザバーをどう作るか（大きさやスペクトル半径）で性能が変わり、エコーステート性もスペクトル半径だけでは保証されません。
 中身を学習しないからこそ物理系でも置き換えられる、というのは、ソフトウェアの外にまで広がる面白い性質だと思います。
-もっと分かりやすい例えがあれば、有識者の方教えて欲しいです！
 
 # 参考
 

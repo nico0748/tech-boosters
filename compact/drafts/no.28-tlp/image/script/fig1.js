@@ -31,7 +31,7 @@ const out = process.argv[2] || "01_TLPのラベルごとの共有範囲.pptx";
     s.addShape("line", {x: 0.3, y: y + RH, w: X0 + CW * 5 - 0.3, h: 0, line: {color: C.grid, width: 0.75}});
     pill(s, 0.4, cy - 0.24, 2.3, 0.48, lab, {fs: 15});
     s.addText(text, {shape: "roundRect", rectRadius: 0.08, x: X0 + 0.1, y: cy - 0.31, w: CW * n - 0.2, h: 0.62,
-      fill: {color: TINT[k]}, line: {color: LINE[k], width: 2}, fontFace: "Helvetica Neue", fontSize: 14, bold: true,
+      fill: {color: TINT[k]}, line: {color: LINE[k], width: 2}, fontFace: "Gibson", fontSize: 14, bold: true,
       color: C.navy, align: "center", valign: "middle", margin: 0});
     for (let i = n; i < 5; i++) T(s, "×", {x: X0 + i * CW, y: cy - 0.2, w: CW, h: 0.4, fontSize: 18, color: "B0B5BC", align: "center", valign: "middle"});
   }

@@ -10,7 +10,7 @@ private: true
 <!--
   コンパクト記事 no.12（草稿。公開前にこのコメントは削除）
   - 裏取り：Fetch Standard（WHATWG）、MDN の CORS のページ
-  - 足したいもの：プリフライトの流れの図（pptx→png）、ブラウザの開発者ツールでのエラーのスクショ
+  - 図1〜3：image/図生成スクリプト.js（2026-11-21 明朝に変更）
   - 関連：deep-dive no.1 XSS（同一オリジンポリシーの話）
 -->
 
@@ -39,11 +39,15 @@ private: true
 
 ## 単純リクエスト
 
-GET や POST で、ヘッダーや Content-Type が決まったもの（`text/plain`、フォームの形式など）だけのとき。
+GET・HEAD・POST で、ヘッダーや Content-Type が決まったもの（`text/plain`、フォームの形式など）だけのとき。
 
 1. ブラウザが `Origin: https://example.com` をつけてリクエストを送る
 2. サーバが `Access-Control-Allow-Origin: https://example.com` を返す
 3. ブラウザは、許可されていれば JavaScript にレスポンスを渡す。許可されていなければ渡さない
+
+![単純リクエストの流れ](image/01_単純リクエストの流れ.png)
+
+サーバはリクエストを処理し終えてからレスポンスを返すので、ブラウザが止めるのは「JavaScript がレスポンスを読むこと」だけです。
 
 ## プリフライトリクエスト
 
@@ -52,6 +56,10 @@ PUT や DELETE、`Content-Type: application/json`、独自のヘッダーなど�
 1. ブラウザが、本番の前に `OPTIONS` で「このメソッドとヘッダーで送っていい？」と聞く
 2. サーバが `Access-Control-Allow-Methods` や `Access-Control-Allow-Headers` で答える
 3. 許可されていれば、ブラウザが本番のリクエストを送る
+
+![プリフライトリクエストの流れ](image/02_プリフライトリクエストの流れ.png)
+
+プリフライトで許可されなければ、本番のリクエストはサーバに送られません。
 
 ## 主なヘッダー
 
@@ -76,12 +84,15 @@ PUT や DELETE、`Content-Type: application/json`、独自のヘッダーなど�
   - どのサイトからでも、ログイン中のユーザーの情報を読めてしまう
 - 許可するオリジンを、前方一致や部分一致で判定する（`example.com.attacker.example` を通してしまう）
 
+![Originの反射とCredentialsの危ない設定](image/03_Originの反射とCredentialsの危ない設定.png)
+
+1つ目の設定だと、攻撃者のページから被害者の Cookie つきでリクエストが飛び、レスポンスの個人情報まで攻撃者の JavaScript に読まれてしまいます。
+
 # まとめ
 
-CORS は「ブラウザに、別オリジンのレスポンスを読んでいいかを教える仕組み」で、守ってくれる範囲は思ったより狭いのよ。
-ほかにもよくある設定ミスがあれば、有識者の方教えて欲しいです！
+CORS は「ブラウザに、別オリジンのレスポンスを読んでいいかを教える仕組み」で、守ってくれる範囲は思ったより狭いです。
 
 # 参考
 
-- WHATWG Fetch Standard（CORS protocol）
-- MDN Web Docs「オリジン間リソース共有（CORS）」
+- WHATWG Fetch Standard（CORS protocol） https://fetch.spec.whatwg.org/#http-cors-protocol
+- MDN Web Docs「オリジン間リソース共有（CORS）」 https://developer.mozilla.org/ja/docs/Web/HTTP/CORS

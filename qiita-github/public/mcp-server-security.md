@@ -43,13 +43,13 @@ MCP（Model Context Protocol）は、LLMアプリと外部のツールやデー�
 - **stdio**：ホストがサーバーを子プロセスとして起動し、標準入出力でやりとりする。ローカルで使うならこれが基本
 - **Streamable HTTP**：サーバーをHTTPで公開し、ネットワーク越しにつなぐ
 
-![MCPの全体像](https://raw.githubusercontent.com/nico0748/tech-boosters/0d7838dc326f3d40e83ab47efae2f42e1a7c7a4b/other/drafts/no.7-mcp-server-security/image/01_MCP%E3%81%AE%E5%85%A8%E4%BD%93%E5%83%8F.png)
+![MCPの全体像](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/other/drafts/no.7-mcp-server-security-done/image/01_MCP%E3%81%AE%E5%85%A8%E4%BD%93%E5%83%8F.png)
 *図1：MCPの全体像。ホストの中のクライアントが、サーバーと1対1でつながる*
 
 LLMがツールを使うときは、図2の順番でやりとりが進みます。
 接続したときにホストがツールの一覧（`tools/list`）を受け取っておき、会話の中でLLMが使いたいツールを選ぶと、ホストがユーザーに確認したうえでサーバーに実行（`tools/call`）を頼みます。
 
-![ツールを呼ぶまでの流れ](https://raw.githubusercontent.com/nico0748/tech-boosters/0d7838dc326f3d40e83ab47efae2f42e1a7c7a4b/other/drafts/no.7-mcp-server-security/image/02_%E3%83%84%E3%83%BC%E3%83%AB%E3%82%92%E5%91%BC%E3%81%B6%E3%81%BE%E3%81%A7%E3%81%AE%E6%B5%81%E3%82%8C.png)
+![ツールを呼ぶまでの流れ](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/other/drafts/no.7-mcp-server-security-done/image/02_%E3%83%84%E3%83%BC%E3%83%AB%E3%82%92%E5%91%BC%E3%81%B6%E3%81%BE%E3%81%A7%E3%81%AE%E6%B5%81%E3%82%8C.png)
 *図2：ツールを呼ぶまでの流れ。実際にファイルやAPIを触るのはサーバーで、LLMはツール名と引数を決めるだけ*
 
 # 構築してみる
@@ -57,7 +57,7 @@ LLMがツールを使うときは、図2の順番でやりとりが進みます�
 今回つないだ構成は図3のとおりです。
 Claude CodeとClaude Desktopのどちらからも、同じPaperLensのMCPサーバーをstdioで起動します。サーバーは、PaperLensアプリが使うのと同じ論文データを読み書きしています。
 
-![PaperLensのMCP構成](https://raw.githubusercontent.com/nico0748/tech-boosters/0d7838dc326f3d40e83ab47efae2f42e1a7c7a4b/other/drafts/no.7-mcp-server-security/image/03_PaperLens%E3%81%AEMCP%E6%A7%8B%E6%88%90.png)
+![PaperLensのMCP構成](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/other/drafts/no.7-mcp-server-security-done/image/03_PaperLens%E3%81%AEMCP%E6%A7%8B%E6%88%90.png)
 *図3：PaperLensのMCP構成。AIに頼んでも、自分でアプリから読んでも、同じデータが更新される*
 
 ## サーバーを作る
@@ -169,7 +169,7 @@ LLMは読んだ文章に影響されるので、普通のプログラムとは�
 図4は、Claudeが書き込み系のツールを使ってPaperLensの数式帳に記号の説明を書き込んだ結果です。
 便利な反面、AIがこれだけの量をノートに直接書き込めるということでもあります。`PAPERLENS_MCP_READONLY` を付けておけば、書き込み系のツール自体が公開されないので、こうした書き込みは起こりません。
 
-![PaperLensの画面とMCPサーバ](https://raw.githubusercontent.com/nico0748/tech-boosters/0d7838dc326f3d40e83ab47efae2f42e1a7c7a4b/other/drafts/no.7-mcp-server-security/image/04_PaperLens%E3%81%AE%E7%94%BB%E9%9D%A2%E3%81%A8MCP%E3%82%B5%E3%83%BC%E3%83%90.png)
+![PaperLensの画面とMCPサーバ](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/other/drafts/no.7-mcp-server-security-done/image/04_PaperLens%E3%81%AE%E7%94%BB%E9%9D%A2%E3%81%A8MCP%E3%82%B5%E3%83%BC%E3%83%90.png)
 *図4：MCPサーバー経由で書き込まれた数式帳。読み取り専用モードでは、書き込み系のツールは公開されない*
 
 ## 使う側の対策
@@ -186,8 +186,6 @@ LLMは読んだ文章に影響されるので、普通のプログラムとは�
 MCPサーバーは、SDKでツールを書いて登録すれば、思ったより簡単につなげました。
 そのぶん、つないだツールはLLMが自分の権限で動かすことになり、外から読んだ文章やツールの説明文そのものが攻撃の入り口になります。
 まずは読み取り専用の最小限のツールから始めて、取り返しのつかない操作は毎回確認する、くらいの慎重さでちょうどいいと思います。
-
-ほかにも「これは気をつけたほうがいい」というポイントがあれば、有識者の方教えて欲しいです！
 
 # 参考
 

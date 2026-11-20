@@ -12,7 +12,7 @@ from lxml import etree
 HERE = os.path.dirname(os.path.abspath(__file__))
 SVG = os.path.join(HERE, "icons", "svg")
 PNG = os.path.join(HERE, "icons")
-JP = "Meiryo"; MONO = "Consolas"
+JP = "Hiragino Sans"; MONO = "Menlo"
 GRAY_TXT = RGBColor(0x55, 0x5B, 0x66); DARK = RGBColor(0x1F, 0x29, 0x37)
 ARROW = RGBColor(0x55, 0x55, 0x55)
 

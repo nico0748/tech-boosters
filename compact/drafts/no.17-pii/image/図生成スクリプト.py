@@ -27,8 +27,8 @@ ICON_DIR = os.path.join(OUT, "icons")
 os.makedirs(os.path.join(ICON_DIR, "svg"), exist_ok=True)
 
 W, H = 13.333, 7.5
-JP = "Noto Sans JP"
-MONO = "Noto Sans Mono"
+JP = "Hiragino Sans"
+MONO = "Menlo"
 
 # 文字サイズ
 F_LANE, F_TITLE, F_BODY = 20, 17, 15

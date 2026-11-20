@@ -4,7 +4,7 @@ const pptxgen = require("pptxgenjs"), JSZip = require("jszip"), fs = require("fs
 const React = require("react"), RDS = require("react-dom/server"), sharp = require("sharp"), tb = require("react-icons/tb");
 
 const OUT = process.argv[2] || ".";
-const FONT = {ja: "Hiragino Sans", en: "Helvetica Neue"};
+const FONT = {ja: "Hiragino Sans", en: "Gibson"};
 const C = {navy: "1F2A44", gray: "5F6368", line: "555555", white: "FFFFFF", border: "D5D9E0",
   teal: "138A7E", tealBg: "EAF6F4", blue: "2F6FDB", blueBg: "EEF4FD", orange: "E07B1A", orangeBg: "FFF4E6",
   purple: "7C4DDB", purpleBg: "F5F1FD", red: "C62828", redBg: "FDECEC", green: "2E7D32", greenBg: "EAF4EA",

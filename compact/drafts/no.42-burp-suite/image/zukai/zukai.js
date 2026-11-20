@@ -9,7 +9,7 @@ const C = {title: "2B3550", rule: "3B5BDB", pink: "D81B60", frame: "E8F1FC", fra
   label: "1A56C8", arrow: "3C4043", text: "222222", muted: "5F6368", grid: "DADCE0", gray: "9AA0A6",
   grayFill: "F1F3F4", err: "D93025", note: "FFF8E1", noteLine: "D4B44A", white: "FFFFFF"};
 // 和文・欧文のフォント。SF Pro にするなら deck() の前に Z.FONT.en = "SF Pro"
-const FONT = {ja: "Hiragino Sans", en: "Helvetica Neue"};
+const FONT = {ja: "Hiragino Sans", en: "Gibson"};
 const FS = {label: 10, sub: 9.5, arrow: 10, box: 11};  // article() で一回り大きくなる
 const ICON = {user: md.MdPerson, admin: md.MdAdminPanelSettings, mobile: md.MdPhoneIphone, pc: md.MdComputer,
   web: md.MdWeb, browser: md.MdWeb, api: md.MdApi, server: md.MdDns, dns: md.MdDns, container: md.MdViewInAr,

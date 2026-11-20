@@ -32,7 +32,7 @@ agreed_posting_campaign_term: false
 4. `example.com` の権威DNSサーバに聞いて、`192.0.2.1` という答えをもらう
 5. キャッシュDNSサーバは端末に答えを返し、その答えを TTL の間だけ覚えておく
 
-![名前解決の流れ](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/01_%E5%90%8D%E5%89%8D%E8%A7%A3%E6%B1%BA%E3%81%AE%E6%B5%81%E3%82%8C.png)
+![名前解決の流れ](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.8-dns-records-done/image/01_%E5%90%8D%E5%89%8D%E8%A7%A3%E6%B1%BA%E3%81%AE%E6%B5%81%E3%82%8C.png)
 *図1：名前解決の流れ。端末が聞くのはキャッシュDNSサーバだけで、ルートから順にたどる（2〜7）のはキャッシュDNSサーバの仕事*
 
 このように、上位のサーバが下位の担当サーバを紹介していく仕組みを**委任**と呼びます。
@@ -84,7 +84,7 @@ www.example.com.  A  192.0.2.1
 www.example.com.  A  192.0.2.2
 ```
 
-![Aレコードの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/02_A%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89.png)
+![Aレコードの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.8-dns-records-done/image/02_A%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89.png)
 *図2：A レコードの仕組み。同じ名前に A を2つ置くと、答えの順番が入れ替わりながら返り、端末ごとに接続先の Web サーバが分かれる*
 
 - 同じ名前に A を複数置くと、答えの順番が入れ替わりながら返り、接続先が分散する（DNS ラウンドロビン）。ただし、止まったサーバを外してくれるわけではない
@@ -101,7 +101,7 @@ www.example.com.  A     192.0.2.1
 www.example.com.  AAAA  2001:db8::1
 ```
 
-![AAAAレコードの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/03_AAAA%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89.png)
+![AAAAレコードの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.8-dns-records-done/image/03_AAAA%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89.png)
 *図3：AAAA レコードの仕組み。IPv6 が使える端末は AAAA と A を両方引き、まず IPv6 で接続を試す。250ms たってもつながらなければ IPv4 でも試し、先につながった方を使う*
 
 - IPv4 と IPv6 の両方が使える端末は、AAAA と A を両方引く。まず IPv6 で接続を試し、少し待って（推奨値 250ms）もつながらなければ IPv4 でも試して、先につながった方を使う（Happy Eyeballs、RFC 8305）
@@ -117,7 +117,7 @@ blog.example.com.   CNAME  example.github.io.
 example.github.io.  A      185.199.108.153
 ```
 
-![CNAMEの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/04_CNAME.png)
+![CNAMEの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.8-dns-records-done/image/04_CNAME.png)
 *図4：CNAME の仕組み。`blog.example.com` を聞くと CNAME が返り、キャッシュDNSサーバが正式な名前 `example.github.io` をたどり直して A を返す*
 
 - 外部サービス（GitHub Pages、CDN など）の IP アドレスが変わっても、こちらの設定を変えずに済む
@@ -136,7 +136,7 @@ IP アドレスを逆順に並べて `in-addr.arpa`（IPv6 は `ip6.arpa`）の�
 mail.example.com.        A    192.0.2.25
 ```
 
-![PTRの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/05_PTR.png)
+![PTRの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.8-dns-records-done/image/05_PTR.png)
 *図5：逆引きの仕組み。`192.0.2.25` は `25.2.0.192.in-addr.arpa` という名前になり、IP アドレスを割り当てた側（プロバイダなど）のゾーンで PTR を引く。メールの受信サーバは、返ってきた名前の A がもとの IP と一致するかも確かめる*
 
 - 逆引きゾーンを管理するのは、ドメインの持ち主ではなく **IP アドレスの割り当て元**（プロバイダやクラウド事業者）。自分のゾーンに書いても効かない
@@ -159,7 +159,7 @@ ns1.example.com.  A   192.0.2.53      ; グルーレコード
 example.com.      NS  ns1.example.com.
 ```
 
-![NSの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/06_NS.png)
+![NSの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.8-dns-records-done/image/06_NS.png)
 *図6：NS による委任。親ゾーンの NS が子ゾーンの担当サーバを紹介する。担当サーバの名前が子ゾーンの中にあるときは、親にグルー（A / AAAA）も置く*
 
 - 担当サーバ `ns1.example.com` が `example.com` の中にあると、「`example.com` を聞くには `ns1.example.com` の IP が要り、それを聞くには `example.com` に聞く必要がある」と堂々巡りになる。そのため、親ゾーンに IP アドレス（**グルーレコード**）も置いておく
@@ -183,7 +183,7 @@ example.com.  SOA  ns1.example.net. hostmaster.example.com. (
 
 `hostmaster.example.com.` は管理者のメールアドレス `hostmaster@example.com` を表します（最初の `.` を `@` に読み替える）。
 
-![SOAとゾーン転送の仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/07_SOA%E3%81%A8%E3%82%BE%E3%83%BC%E3%83%B3%E8%BB%A2%E9%80%81.png)
+![SOAとゾーン転送の仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.8-dns-records-done/image/07_SOA%E3%81%A8%E3%82%BE%E3%83%BC%E3%83%B3%E8%BB%A2%E9%80%81.png)
 *図7：SOA とゾーン転送。プライマリが更新を NOTIFY で知らせ、セカンダリは SOA のシリアル番号を比べて、増えていればゾーンを転送してもらう*
 
 - 権威DNSサーバは、ふつう**プライマリ**（原本を持つ）と**セカンダリ**（コピーを持つ）の複数台で動かす
@@ -207,7 +207,7 @@ mail1.example.com.  A   192.0.2.25
 mail2.example.com.  A   192.0.2.26
 ```
 
-![MXの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/08_MX.png)
+![MXの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.8-dns-records-done/image/08_MX.png)
 *図8：MX の仕組み。送信側のメールサーバは優先度 10 のサーバから試し、つながらなければ優先度 20 のサーバに送る*
 
 `user@example.com` 宛てのメールは、送る側のメールサーバが次の順に処理します。
@@ -228,7 +228,7 @@ mail2.example.com.  A   192.0.2.26
 メールの受け取り先を別のサービスに移すときは、MX の向き先を新しいサービスに変えます。
 ただし、切り替えの前後で、メールが2つの箱に分かれて届くことがあります。
 
-![MXの切り替えと届く箱](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/09_MX%E3%81%AE%E5%88%87%E3%82%8A%E6%9B%BF%E3%81%88%E3%81%A8%E5%B1%8A%E3%81%8F%E7%AE%B1.png)
+![MXの切り替えと届く箱](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.8-dns-records-done/image/09_MX%E3%81%AE%E5%88%87%E3%82%8A%E6%9B%BF%E3%81%88%E3%81%A8%E5%B1%8A%E3%81%8F%E7%AE%B1.png)
 *図9：MX を切り替える前と後で、メールが届く箱。切り替え前は、社外からのメールは MX が指す旧サーバの箱に、同じクラウドサービスの利用者からのメールはクラウドの箱に届いてしまう。切り替え後は、DNS のゾーンの MX だけを書き換えて、どちらもクラウドの箱に届くようにする*
 
 分かれる理由は2つあります。
@@ -244,7 +244,7 @@ TXT は、任意の文字列を置けるレコードです（RFC 1035）。
 1つの文字列は255バイトまでで、長い値は複数の文字列に分けて書きます。
 自由に書ける分、いろいろな仕組みが「決まった名前に、決まった形式の TXT を置く」というルールで使っています。
 
-![TXTの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/596e7f8e64874d53b2ab446bc9a03e4150c4007a/compact/drafts/no.8-dns-records/image/10_TXT.png)
+![TXTの仕組み](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.8-dns-records-done/image/10_TXT.png)
 *図10：TXT を使った送信ドメイン認証。受信側のメールサーバが、送信元ドメインの SPF・DKIM・DMARC の TXT を引いて、なりすましでないかを確かめる*
 
 | 用途 | 置く名前 | 例 |

@@ -26,12 +26,12 @@ Sussillo と Abbott が 2009 年に提案しました。名前は First-Order Re
 
 ネットワークの形は、リザバーコンピューティングとほぼ同じです。まずはざっくりした全体像から。
 
-![FORCE学習の概念図](https://raw.githubusercontent.com/nico0748/tech-boosters/46852adc57a25e547e899bb2f3cb36bb1d835a35/compact/drafts/no.6-force-learning/image/01_FORCE%E5%AD%A6%E7%BF%92%E3%81%AE%E6%A6%82%E5%BF%B5%E5%9B%B3.png)
+![FORCE学習の概念図](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.6-force-learning-done/image/01_FORCE%E5%AD%A6%E7%BF%92%E3%81%AE%E6%A6%82%E5%BF%B5%E5%9B%B3.png)
 *図1：FORCE学習の全体像。ネットワークは出力をフィードバックしながら動き、学習中だけ、誤差を使って読み出し $`w`$ を直すループが回る*
 
 中身をもう少し細かく描くと、こうなります。
 
-![FORCE学習のアーキテクチャ](https://raw.githubusercontent.com/nico0748/tech-boosters/46852adc57a25e547e899bb2f3cb36bb1d835a35/compact/drafts/no.6-force-learning/image/02_FORCE%E5%AD%A6%E7%BF%92%E3%81%AE%E3%82%A2%E3%83%BC%E3%82%AD%E3%83%86%E3%82%AF%E3%83%81%E3%83%A3.png)
+![FORCE学習のアーキテクチャ](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.6-force-learning-done/image/02_FORCE%E5%AD%A6%E7%BF%92%E3%81%AE%E3%82%A2%E3%83%BC%E3%82%AD%E3%83%86%E3%82%AF%E3%83%81%E3%83%A3.png)
 *図2：FORCE学習の構成。再帰結合 $`J`$ と出力フィードバック $`w_f`$ は固定で、読み出し $`w`$ だけを、誤差 $`e(t)`$ を使って RLS で毎ステップ直す*
 
 - 中の再帰結合 $`J`$ はランダムで固定する（ネットワークはカオス的に動く）
@@ -105,7 +105,7 @@ print("テスト区間の誤差 (RMSE):", np.sqrt(np.mean((out[T_train:] - f[T_t
 
 上のコードとほぼ同じ設定（目標も同じ波形）で、学習前 → 学習中 → 学習後と続けて動かしたときの様子を図にしました。
 
-![FORCE学習の学習過程](https://raw.githubusercontent.com/nico0748/tech-boosters/46852adc57a25e547e899bb2f3cb36bb1d835a35/compact/drafts/no.6-force-learning/image/03_FORCE%E5%AD%A6%E7%BF%92%E3%81%AE%E5%AD%A6%E7%BF%92%E9%81%8E%E7%A8%8B.png)
+![FORCE学習の学習過程](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/compact/drafts/no.6-force-learning-done/image/03_FORCE%E5%AD%A6%E7%BF%92%E3%81%AE%E5%AD%A6%E7%BF%92%E9%81%8E%E7%A8%8B.png)
 *図3：学習の過程。上から、出力 $`z(t)`$ と目標 $`f(t)`$、リザバーの中のニューロン 3 個の活動 $`r_i(t)`$、1ステップあたりの重みの変化量 $`\|\Delta w\|`$（対数軸、移動平均）*
 
 1. **学習前**：読み出し $`w`$ は小さなランダム値です。ニューロンの活動は不規則（カオス的）で、出力も目標とはまったく合いません
@@ -133,7 +133,6 @@ print("テスト区間の誤差 (RMSE):", np.sqrt(np.mean((out[T_train:] - f[T_t
 「誤差を最初から小さく保つことで、カオスを手なずける」のが FORCE学習のミソでした。
 手元のコードでも、RLS を止めたあとのテスト区間で RMSE が 0.003 くらいに収まり、学習後も目標の波形を出し続けました。
 ただし、パラメータは原論文より小さくしているので、論文と同じ規模で同じように動くかまでは確かめていません。
-理解が浅いところがあれば、有識者の方教えて欲しいです！
 
 # 参考
 

@@ -51,7 +51,7 @@ LangChainは、LLMアプリでよく使う部品を、共通の書き方で扱�
 
 図1は、LangChain単体でエージェントを作ったときの構成です。プロンプトにユーザーの入力を埋め込んでチャットモデルに渡し、モデルが必要と判断すればツールを呼んで、その結果を受け取ってから回答を返します。モデルの提供元が変わっても、この形は変わりません。
 
-![LangChain単体の構成](https://raw.githubusercontent.com/nico0748/tech-boosters/c2c73583c612107f6bde5f0d2f9a79beef39d8b8/other/drafts/no.9-lang-series/image/01_LangChain%E5%8D%98%E4%BD%93%E3%81%AE%E6%A7%8B%E6%88%90.png)
+![LangChain単体の構成](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/other/drafts/no.9-lang-series-done/image/01_LangChain%E5%8D%98%E4%BD%93%E3%81%AE%E6%A7%8B%E6%88%90.png)
 *図1：LangChain単体の構成。モデルの呼び出しとツールの実行を、共通の書き方でつなぐ*
 
 ## どんなときに使うか
@@ -73,7 +73,7 @@ LangGraphは、エージェントの処理を「ノード（処理）」と「�
 
 図2は、複数のエージェントをLangGraphでまとめた例です。スーパーバイザーが次の担当を決め、各エージェントの中身はLangChainで書きます。会話履歴や途中の結果は共有のState（状態）に入れて受け渡し、チェックポインタに保存しておくことで、失敗しても途中から再開できます。
 
-![LangGraphによるオーケストレーション](https://raw.githubusercontent.com/nico0748/tech-boosters/c2c73583c612107f6bde5f0d2f9a79beef39d8b8/other/drafts/no.9-lang-series/image/02_LangGraph%E3%81%AB%E3%82%88%E3%82%8B%E3%82%AA%E3%83%BC%E3%82%B1%E3%82%B9%E3%83%88%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3.png)
+![LangGraphによるオーケストレーション](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/other/drafts/no.9-lang-series-done/image/02_LangGraph%E3%81%AB%E3%82%88%E3%82%8B%E3%82%AA%E3%83%BC%E3%82%B1%E3%82%B9%E3%83%88%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3.png)
 *図2：LangGraphによるオーケストレーション。分岐・人の確認・途中保存をグラフとして書ける*
 
 ## LangChainとどう使い分けるのか？
@@ -88,7 +88,7 @@ LangGraphは、処理の流れを組み立てる（オーケストレーショ�
 
 両方を組み合わせた例がRAGです（図3）。文書の読み込みからベクトルストアへの保存まではLangChainの部品で準備しておき、質問が来たときの「検索するか判断する → 検索する → 関連があるか確かめる → なければ質問を書き換えてもう一度」という流れをLangGraphで組みます。
 
-![LangGraphで組むRAG](https://raw.githubusercontent.com/nico0748/tech-boosters/c2c73583c612107f6bde5f0d2f9a79beef39d8b8/other/drafts/no.9-lang-series/image/03_LangGraph%E3%81%A7%E7%B5%84%E3%82%80RAG.png)
+![LangGraphで組むRAG](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/other/drafts/no.9-lang-series-done/image/03_LangGraph%E3%81%A7%E7%B5%84%E3%82%80RAG.png)
 *図3：LangGraphで組むRAG。部品はLangChain、流れの分岐とループはLangGraphが受け持つ*
 
 # LangSmith：動きを記録して、評価する
@@ -106,7 +106,7 @@ LangChainやLangGraphとはそのまま連携できますが、それ以外の�
 
 LangChainやLangGraphで作ったアプリなら、環境変数（`LANGSMITH_TRACING=true` など）を設定するだけで、SDKがトレースをLangSmithに送ってくれます（図4）。
 
-![LangSmithを加えた構成](https://raw.githubusercontent.com/nico0748/tech-boosters/c2c73583c612107f6bde5f0d2f9a79beef39d8b8/other/drafts/no.9-lang-series/image/04_LangSmith%E3%82%92%E5%8A%A0%E3%81%88%E3%81%9F%E6%A7%8B%E6%88%90.png)
+![LangSmithを加えた構成](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/other/drafts/no.9-lang-series-done/image/04_LangSmith%E3%82%92%E5%8A%A0%E3%81%88%E3%81%9F%E6%A7%8B%E6%88%90.png)
 *図4：LangSmithを加えた構成。アプリからトレースを送り、開発者はブラウザで記録・評価・監視を確認する*
 
 実際にLangSmithにログインすると、図6の画面になります。左のメニューに、トレース（Tracing）、監視（Monitoring）、データセットと実験（Datasets & Experiments）、評価（Evaluators）、プロンプト管理（Prompts）などが並んでいて、ここまでで紹介した機能がそのまま項目になっています。
@@ -133,7 +133,7 @@ Langfuseは、LangSmithとよく似た役割を持つ、オープンソースの
 
 図5は、Langfuseを自分のAWSアカウントに立てる場合と、Langfuseのクラウド版を使う場合を並べたものです。アプリ側はLangfuseのSDKを組み込み、送信先（`LANGFUSE_BASE_URL`）を切り替えるだけで、どちらにもトレースを送れます。自分で立てる場合は、Web・Worker・データベース・キュー・ClickHouseなど、運用する部品が増える点に注意が必要です。
 
-![Langfuseを加えた構成](https://raw.githubusercontent.com/nico0748/tech-boosters/c2c73583c612107f6bde5f0d2f9a79beef39d8b8/other/drafts/no.9-lang-series/image/05_Langfuse%E3%82%92%E5%8A%A0%E3%81%88%E3%81%9F%E6%A7%8B%E6%88%90.png)
+![Langfuseを加えた構成](https://raw.githubusercontent.com/nico0748/tech-boosters/3e58fdeaf77d451fd05acf707bf5fcb28147bcbb/other/drafts/no.9-lang-series-done/image/05_Langfuse%E3%82%92%E5%8A%A0%E3%81%88%E3%81%9F%E6%A7%8B%E6%88%90.png)
 *図5：Langfuseを加えた構成。自分のAWSで運用するか、クラウド版を使うかを選べる*
 
 クラウド版には東京リージョン（`jp.cloud.langfuse.com`）もあり、トレースやプロンプト、評価のデータを日本国内に置いたまま使えるとされています（図7）。サイトのロゴの横に「by ClickHouse」と書かれているところからも、ClickHouse社の傘下に入ったことが分かります。

@@ -216,8 +216,6 @@ forward pass 0回、つまり一度も試さずに書いた重みでも、小さ
 
 それでも、重みを人間には読めない数字の山ではなく、読んで直せるものとして扱えるかもしれない、というのは解釈可能性にもセキュリティにも大きい話です。追試やほかのLLMでの結果が出てきたら、また追いかけてみようと思います。
 
-ほかにも重みの監査や攻撃への使い道で面白い見方があれば、有識者の方教えて欲しいです！
-
 # 参考
 
 - [Sparks of Weight-Space Programming（Rikiya Takehi, Jayden Teoh, Alex Zhang, Omar Khattab / MIT CSAIL, 2026-11-02）](https://rikiyat.github.io/blog/weight-space-programming/)

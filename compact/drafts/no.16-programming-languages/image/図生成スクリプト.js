@@ -5,7 +5,7 @@ const React = require("react"), RDS = require("react-dom/server"), sharp = requi
 const tb = require("react-icons/tb"), si = require("react-icons/si");
 
 const OUT = process.argv[2] || ".";
-const FONT = {ja: "Hiragino Sans", en: "Helvetica Neue", mono: "Menlo"};
+const FONT = {ja: "Hiragino Sans", en: "Gibson", mono: "Menlo"};
 const C = {text: "1F2937", muted: "5F6368", arrow: "555555", line: "C8CCD2", white: "FFFFFF", gray: "9AA0A6", grayBg: "F1F3F4"};
 // レーンのアクセント色（お手本の配色例）
 const L = {

@@ -12,7 +12,7 @@ from PIL import Image
 
 out = sys.argv[1]
 HERE = os.path.dirname(os.path.abspath(__file__)); ICON = os.path.join(HERE, "icons")
-JP = "Noto Sans CJK JP"; MONO = "DejaVu Sans Mono"
+JP = "Hiragino Sans"; MONO = "Menlo"
 INK = RGBColor(0x1F,0x23,0x28); SUB = RGBColor(0x4B,0x55,0x63); EDGE = RGBColor(0x55,0x55,0x55)
 BORDER = RGBColor(0xC8,0xCC,0xD2); WHITE = RGBColor(0xFF,0xFF,0xFF)
 GREEN = RGBColor(0x2E,0x7D,0x32); RED = RGBColor(0xC6,0x28,0x28)
