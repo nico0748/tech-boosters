@@ -171,15 +171,28 @@ Homebrew Cask で `.pkg` 形式のアプリを入れると、インストール�
 
 AI系の拡張機能は更新の頻度が高く、更新のたびに旧バージョンのフォルダが残っていました。ChatGPT の拡張機能は1世代で約1GBあります。
 
-いま使っている拡張機能は `~/.vscode/extensions/extensions.json` に載っています。ここに載っていないフォルダだけを消すと安全です。次のスクリプトは、消してよいフォルダの候補を表示するだけで、削除はしません。
+いま使っている拡張機能は `~/.vscode/extensions/extensions.json` に載っています。ただし、VS Code のプロファイルを使っている場合、拡張機能のフォルダは `~/.vscode/extensions` にまとめて置かれる一方で、一覧はプロファイルごとの `~/Library/Application Support/Code/User/profiles/*/extensions.json` に分かれています。なので、**どの一覧にも載っていないフォルダだけ** を消すのが安全です。
+
+次のスクリプトは、すべての一覧を見たうえで、消してよいフォルダの候補を表示するだけで、削除はしません。
 
 ```bash
 python3 - <<'EOF'
-import json, os
-d = os.path.expanduser('~/.vscode/extensions')
-used = {e['relativeLocation'] for e in json.load(open(os.path.join(d, 'extensions.json')))}
-for name in sorted(os.listdir(d)):
-    if os.path.isdir(os.path.join(d, name)) and name not in used:
+import glob, json, os
+ext_dir = os.path.expanduser('~/.vscode/extensions')
+manifests = [os.path.join(ext_dir, 'extensions.json')]
+# プロファイルごとの一覧（プロファイルを使っていなければ何も見つからないだけ）
+manifests += glob.glob(os.path.expanduser(
+    '~/Library/Application Support/Code/User/profiles/*/extensions.json'))
+used = set()
+for m in manifests:
+    for e in json.load(open(m)):
+        loc = e.get('relativeLocation')
+        if not loc:
+            path = e.get('location', {}).get('path', '')
+            loc = os.path.basename(path.rstrip('/'))
+        used.add(loc)
+for name in sorted(os.listdir(ext_dir)):
+    if os.path.isdir(os.path.join(ext_dir, name)) and name not in used:
         print(name)
 EOF
 ```
