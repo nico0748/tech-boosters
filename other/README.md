@@ -30,3 +30,4 @@
   - `no.15-nyxis/` 数学的に情報漏洩がないことを保証するバックエンドフレームワーク「Nyxis」を数弱が理解してみる
   - `no.17-weight-space-programming/` LLMがニューラルネットの重みを直接書き換える！？重み空間プログラミングを詳しく見てみる
   - `no.18-claude-max-usage/` Claude Max（5x）ユーザーの使い方：記事と図をスレッド並列で作っている話
+  - `no.19-year-end-storage-cleanup/` 年末の大掃除でストレージ確保をClaude君とやってみた！（Macで約83GB空けた記録）
