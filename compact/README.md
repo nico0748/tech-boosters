@@ -24,7 +24,7 @@
   - `no.10-fermi-estimation-done/` フェルミ推定
   - `no.11-central-limit-theorem-normal-distribution-done/` 中心極限定理と正規分布
   - `no.12-cors-done/` CORS
-  - `no.13-rag/` RAG
+  - `no.13-rag-done/` RAG
   - `no.14-framework-library-package/` フレームワーク・ライブラリ・パッケージの違い
   - `no.15-npm-pnpm-yarn-bun/` npm・pnpm・yarn・bunの違い
   - `no.16-programming-languages/` プログラミング言語の分け方
