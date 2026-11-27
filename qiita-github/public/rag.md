@@ -1,16 +1,18 @@
 ---
 title: RAGを簡単にまとめる
 tags:
-  - RAG
+  - rag
   - LLM
   - 生成AI
-  - セキュリティ
+  - Security
 private: false
-updated_at: ''
-id: null
+updated_at: '2026-11-28T00:00:44+09:00'
+id: 1d5256c7acbc93d2080b
 organization_url_name: null
 slide: false
 ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 # はじめに
 
