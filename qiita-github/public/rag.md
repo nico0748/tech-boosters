@@ -5,15 +5,13 @@ tags:
   - LLM
   - 生成AI
   - セキュリティ
-private: true
+private: false
+updated_at: ''
+id: null
+organization_url_name: null
+slide: false
+ignorePublish: false
 ---
-<!--
-  コンパクト記事 no.13（草稿。公開前にこのコメントは削除）
-  - 裏取り：Lewis ら (2020) の論文、OWASP Top 10 for LLM Applications
-  - 足したいもの：インデックス作成と、検索→生成の流れの図（pptx→png）
-  - 関連：other no.9 Langシリーズ（LangChain で RAG を組む話）
--->
-
 # はじめに
 
 社内ドキュメントに答えるチャットボットの話でよく出てくる RAG を、仕組みと気をつけどころに絞ってまとめておきます。
@@ -38,6 +36,10 @@ LLM が学習していない情報（社内資料、最新の情報）にも答�
 3. 取り出したチャンクを、質問と一緒にプロンプトに入れる（Augmented）
 4. LLM が、そのチャンクをもとに答えを作る（Generation）
 
+![RAGの全体像](https://raw.githubusercontent.com/nico0748/tech-boosters/8405726d0167fd52dd2f067eb9a1615f93c55807/compact/drafts/no.13-rag/image/01_RAG%E3%81%AE%E5%85%A8%E4%BD%93%E5%83%8F.png)
+
+上の段が事前に一度だけやるインデックス作成、下の段が質問のたびに動く流れで、番号は上の手順と対応しています。
+
 # ファインチューニングとの違い
 
 | | RAG | ファインチューニング |
@@ -59,13 +61,17 @@ LLM が学習していない情報（社内資料、最新の情報）にも答�
 - **アクセス制御**：ユーザーが本来見られない文書が検索結果に出てこないよう、検索の段階で権限を絞る
 - **データの汚染**：検索対象の文書を書き換えられると、間違った答えを返すようになる
 
+![RAGのセキュリティで気をつける箇所](https://raw.githubusercontent.com/nico0748/tech-boosters/8405726d0167fd52dd2f067eb9a1615f93c55807/compact/drafts/no.13-rag/image/02_RAG%E3%81%AE%E3%82%BB%E3%82%AD%E3%83%A5%E3%83%AA%E3%83%86%E3%82%A3%E3%81%A7%E6%B0%97%E3%82%92%E3%81%A4%E3%81%91%E3%82%8B%E7%AE%87%E6%89%80.png)
+
+文書に混ぜ込まれた誤情報や指示文は、ベクトルDB → 検索 → プロンプトとそのまま流れて LLM まで届きます。アクセス制御は、その途中の検索の段階で入れます。
+
 RAG を使っても、ハルシネーション（もっともらしい間違い）は減らせるだけで、なくなるわけではありません。
 
 # まとめ
 
-RAG は「調べてから答える」を LLM にやらせる仕組みで、検索の質と、検索される文書の安全性がそのまま答えの質になるのよ。
+RAG は「調べてから答える」を LLM にやらせる仕組みで、検索の質と、検索される文書の安全性がそのまま答えの質になります。
 
 # 参考
 
-- P. Lewis et al., "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks", NeurIPS, 2020
-- OWASP Top 10 for LLM Applications
+- P. Lewis et al., "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks", NeurIPS, 2020 https://arxiv.org/abs/2005.11401
+- OWASP Top 10 for LLM Applications 2025（LLM01 Prompt Injection、LLM04 Data and Model Poisoning、LLM08 Vector and Embedding Weaknesses） https://genai.owasp.org/llm-top-10/
